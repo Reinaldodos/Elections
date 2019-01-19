@@ -1,0 +1,467 @@
+names(lieu)
+names(lieu[1,])
+lieu[1,]
+lieu[,1]
+lieu
+dim(lieu)
+class(lieu)
+data.frame(lieu)
+canton <- NULL
+canton[1] <- lieu [,1]
+canton[1] <- lieu [1,]
+lieu
+lieu <- data.frame(lieu)
+canton[1] <- lieu [1,]
+canton[2,] <- lieu [2,]
+canton
+lieu
+bou <- t(lieu)
+bou
+colnames(bou)
+colnames(bou) <- c("Département", "Canton")
+bou
+cantoncla <- readHTMLTable(tatat, stringsAsFactors = FALSE)#
+	cla <- cla[[2]]#
+	cal <- htmlParse(tatat)#
+	Canton <- xpathSApply(cal, "//div[@class='offset2 span8']/h3", xmlValue)#
+	Canton <- Canton[1]#
+	lieu <- strsplit(Canton, " - ")#
+	lieu <- data.frame(lieu)#
+	bou <- t(lieu)#
+	colnames(bou) <- c("Département", "Canton")#
+	nr <- nrow(cla)#
+	to <- NULL#
+	for(n in 1:nr)#
+	{#
+		to <- rbind(to, bou)#
+	}#
+	result <- cbind(cla, to)#
+	result <- data.frame(result)
+rbind(to, bou)
+to
+to <- rbind(to, bou)
+to
+cbind(cla, bou)
+dim(cla)
+cla <- readHTMLTable(tatat, stringsAsFactors = FALSE)#
+	cla <- cla[[2]]#
+	cal <- htmlParse(tatat)#
+	Canton <- xpathSApply(cal, "//div[@class='offset2 span8']/h3", xmlValue)#
+	Canton <- Canton[1]#
+	lieu <- strsplit(Canton, " - ")#
+	lieu <- data.frame(lieu)#
+	bou <- t(lieu)#
+	colnames(bou) <- c("Département", "Canton")
+cla
+nr <- nrow(cla)#
+	to <- NULL#
+	for(n in 1:nr)#
+	{#
+		to <- rbind(to, bou)#
+	}#
+	result <- cbind(cla, to)#
+	result <- data.frame(result)
+result
+to
+rownames(bou) <-NULL
+bou
+cla <- readHTMLTable(tatat, stringsAsFactors = FALSE)#
+	cla <- cla[[2]]#
+	cal <- htmlParse(tatat)#
+	Canton <- xpathSApply(cal, "//div[@class='offset2 span8']/h3", xmlValue)#
+	Canton <- Canton[1]#
+	lieu <- strsplit(Canton, " - ")#
+	lieu <- data.frame(lieu)#
+	bou <- t(lieu)#
+	colnames(bou) <- c("Département", "Canton")#
+	rownames(bou) <- NULL#
+	nr <- nrow(cla)#
+	to <- NULL#
+	for(n in 1:nr)#
+	{#
+		to <- rbind(to, bou)#
+	}#
+	result <- cbind(cla, to)#
+	result <- data.frame(result)
+result
+source("Recup.R")
+bou[1,]
+bou[,1]
+source("Recup.R")
+tatat
+cla <- readHTMLTable(tatat, stringsAsFactors = FALSE)#
+	cla <- cla[[2]]#
+	cal <- htmlParse(tatat)#
+	Canton <- xpathSApply(cal, "//div[@class='offset2 span8']/h3", xmlValue)#
+	Canton <- Canton[1]#
+	lieu <- strsplit(Canton, " - ")#
+	lieu <- data.frame(lieu)#
+	bou <- t(lieu)#
+	colnames(bou) <- c("Département", "Canton")#
+	rownames(bou) <- NULL#
+	show(bou[1,])
+source("Recup.R")
+Canton
+source("Recup.R")
+result
+data
+data[,select=c("Département", "Canton")]
+subset(data,select=c("Département", "Canton"))
+lo <- subset(data,select=c("Département", "Canton"))
+lo[,1]
+lo[1,]
+lo[1,nrow(lo)]
+lo[1,nrow(lo)-1]
+lo[nrow(lo,)]
+lo[nrow(lo),]
+source("Recup.R")
+lo
+source("Recup.R")
+liens[1]
+liens[1,]
+tatat <- liens[1,]
+recup <- function(tatat) #
+{#
+	cla <- readHTMLTable(tatat, stringsAsFactors = FALSE)#
+	cla <- cla[[2]]#
+	cal <- htmlParse(tatat)#
+	Canton <- xpathSApply(cal, "//div[@class='offset2 span8']/h3", xmlValue)#
+	Canton <- Canton[1]#
+	lieu <- strsplit(Canton, " - ")#
+	lieu <- data.frame(lieu)#
+	bou <- t(lieu)#
+	colnames(bou) <- c("Département", "Canton")#
+	rownames(bou) <- NULL#
+	nr <- nrow(cla)#
+	to <- NULL#
+	for(n in 1:nr)#
+	{#
+		to <- rbind(to, bou)#
+	}#
+	result <- cbind(cla, to)#
+	result <- data.frame(result)#
+	return(result)#
+}
+data <- NULL
+merge(data, recup(tatat), all=TRUE)
+tatat <- toString(tatat)
+merge(data, recup(tatat), all=TRUE)
+data <- merge(data, recup(tatat), all=TRUE)
+data
+data <- merge(data, recup(tatat), all=TRUE)
+data
+data <- merge(data, recup(tatat), all=TRUE)
+data
+source("Recup.R")
+elus <- data[data$Elus == "Oui",]
+elus
+table(elus$Département, elus$Nuances)
+elus$Département
+toto <- table(elus$Département, elus$Nuances)
+addmargins(toto)
+colnames(toto)
+colnames(toto[1,])
+colnames(toto[1,]) <- "Département"
+toto <- table(elus$Département, elus$Nuances)
+toto
+data.frame(toto)
+data.table(toto)
+class(toto)
+as.data.frame(table)
+as.data.frame(toto)
+toto
+as.data.frame.matrix(toto)
+colnames(toto)
+colnames(toto[,1])
+colnames(toto[1,])
+colnames(toto[2,])
+colnames(toto[,2])
+toto[,2]
+rownames(toto)
+dep <- rownames(toto)
+dep[1]
+elus
+majo <- aggregate(elus$Département, list(results$Nuances), max)
+majo <- aggregate(elus$Département, list(elus$Nuances), max)
+results <- data.frame(toto)
+colnames(results)
+results
+colnames(results)
+colnames(results) <- c("Département", "Nuance", "Elus")
+majo <- aggregate(results, list(results$Elus), max)
+class(results$Elus)
+max(results$Elus)
+elus <- data[data$Elus == "Oui",]#
+#
+toto <- table(elus$Département, elus$Nuances)#
+#
+results <- data.frame(toto)#
+colnames(results) <- c("Département", "Nuance", "Elus")#
+#
+toto <- as.data.frame.matrix(toto)
+toto
+table(data$Département, data$Canton)
+fd <- table(data$Département, data$Canton)
+fd <- addmargins(fd)
+fd
+lo
+unique(lo)
+can<-unique(lo)
+fd <- table(can$Département, can$Canton)
+fd<-addmargins(fd)
+fd<-as.data.frame.matrix(fd)
+colnames(fd)
+fd$Sum
+subset(fd, fd$Sum)
+fd[fd, select=c("Sum")]
+subset(fd, select=c("Sum"))
+elus
+toto
+results
+as.table(results)
+toto
+library(XML)#
+#
+'récupérer le tableau des résultats'#
+recup <- function(tatat) #
+{#
+	cla <- readHTMLTable(tatat, stringsAsFactors = FALSE)#
+	cla <- cla[[2]]#
+	cal <- htmlParse(tatat)#
+	Canton <- xpathSApply(cal, "//div[@class='offset2 span8']/h3", xmlValue)#
+	Canton <- Canton[1]#
+	lieu <- strsplit(Canton, " - ")#
+	lieu <- data.frame(lieu)#
+	bou <- t(lieu)#
+	colnames(bou) <- c("Département", "Canton")#
+	rownames(bou) <- NULL#
+	nr <- nrow(cla)#
+	to <- NULL#
+	for(n in 1:nr)#
+	{#
+		to <- rbind(to, bou)#
+	}#
+	result <- cbind(cla, to)#
+	result <- data.frame(result)#
+	return(result)#
+}#
+#
+liens <- read.csv(file="Liens.csv", header=FALSE)#
+#
+data <- NULL#
+error <- NULL
+source("Recup.R")
+n
+library(XML)#
+#
+'récupérer le tableau des résultats'#
+recup <- function(tatat) #
+{#
+	cla <- readHTMLTable(tatat, stringsAsFactors = FALSE)#
+	cla <- cla[[2]]#
+	cal <- htmlParse(tatat)#
+	Canton <- xpathSApply(cal, "//div[@class='offset2 span8']/h3", xmlValue)#
+	Canton <- Canton[1]#
+	lieu <- strsplit(Canton, " - ")#
+	lieu <- data.frame(lieu)#
+	bou <- t(lieu)#
+	colnames(bou) <- c("Département", "Canton")#
+	rownames(bou) <- NULL#
+	nr <- nrow(cla)#
+	to <- NULL#
+	for(n in 1:nr)#
+	{#
+		to <- rbind(to, bou)#
+	}#
+	result <- cbind(cla, to)#
+	result <- data.frame(result)#
+	return(result)#
+}#
+#
+liens <- read.csv(file="Liens.csv", header=FALSE)#
+#
+data <- NULL#
+error <- NULL
+source("Recup.R")
+source("Resultats.R")
+error
+liens
+error
+liens[1,]
+liens[,1]
+source("Resultats.R")
+error
+results
+bou
+source("Resultats.R")
+tatat
+source("Resultats.R")
+liens
+source("Resultats.R")
+recup
+source("Resultats.R")
+read.csv("Liens.csv")
+source("Resultats.R")
+toto
+bou
+data
+dim(data)
+lo
+elus
+n
+l
+tatat
+cla <- readHTMLTable(tatat, stringsAsFactors = FALSE)#
+	cla <- cla[[2]]#
+	cal <- htmlParse(tatat)#
+	Canton <- xpathSApply(cal, "//div[@class='offset2 span8']/h3", xmlValue)#
+	Canton <- Canton[1]#
+	lieu <- strsplit(Canton, " - ")#
+	lieu <- data.frame(lieu)#
+	bou <- t(lieu)#
+	colnames(bou) <- c("Département", "Canton")#
+	rownames(bou) <- NULL#
+	nr <- nrow(cla)#
+	to <- NULL#
+	for(n in 1:nr)#
+	{#
+		to <- rbind(to, bou)#
+	}#
+	result <- cbind(cla, to)#
+	result <- data.frame(result)
+result
+lo <- subset(data,select=c("Département", "Canton"))#
+  lo <- unique(lo)#
+  lo <- lo[order(lo$Canton),]#
+  lo <- lo[order(lo$Département),]
+lo
+source("Resultats.R")
+readHTMLTable("http://app.swarm.fm/#/releases/explore/myartists/trending/albums")
+htmlParse("")
+htmlParse("http://app.swarm.fm/#/releases/explore/myartists/trending/albums")
+source("Resultats.R")
+error
+lo <- subset(data,select=c("Département", "Canton"))#
+  lo <- unique(lo)#
+  lo <- lo[order(lo$Canton),]#
+  lo <- lo[order(lo$Département),]#
+  show(lo[nrow(lo),])
+tatat <- error [1,1]
+tatat
+data <- merge(data, recup(tatat), all=TRUE)
+cla <- readHTMLTable(tatat, stringsAsFactors = FALSE)#
+	cla <- cla[[2]]#
+	cal <- htmlParse(tatat)#
+	Canton <- xpathSApply(cal, "//div[@class='offset2 span8']/h3", xmlValue)#
+	Canton <- Canton[1]#
+	lieu <- strsplit(Canton, " - ")#
+	lieu <- data.frame(lieu)#
+	bou <- t(lieu)#
+	colnames(bou) <- c("Département", "Canton")#
+	rownames(bou) <- NULL#
+	nr <- nrow(cla)#
+	to <- NULL#
+	for(n in 1:nr)#
+	{#
+		to <- rbind(to, bou)#
+	}#
+	result <- cbind(cla, to)#
+	result <- data.frame(result)
+bou
+source("Resultats.R")
+error
+toto
+toto$BC-SOC
+toto
+source("Resultats.R")
+cla <- readHTMLTable(tatat, stringsAsFactors = FALSE)
+cla
+cla[1]
+elus <- data[data$Elus == "Oui",]
+elus
+source("Resultats.R")
+elus
+toto
+error
+liens
+data
+elus
+toto
+help(write.table)
+source("Resultats.R")
+tatat <- "http://elections.interieur.gouv.fr/departementales-2015/02A/02A03.html"
+cla <- readHTMLTable(tatat, stringsAsFactors = FALSE)
+cla
+tatat <- "http://elections.interieur.gouv.fr/departementales-2015/02A/02A04.html"
+cla <- readHTMLTable(tatat, stringsAsFactors = FALSE)
+cla
+source("Resultats.R")
+lo
+data
+data
+source("Resultats.R")
+source("Resultats.R")
+source("Resultats.R")
+error
+liens
+tatat <- "http://elections.interieur.gouv.fr/departementales-2015/034/03420.html"
+recup(tatat)
+cla <- readHTMLTable(tatat, stringsAsFactors = FALSE)#
+	cla <- cla[[2]]#
+	cal <- htmlParse(tatat)#
+	Canton <- xpathSApply(cal, "//div[@class='offset2 span8']/h3", xmlValue)#
+	Canton <- Canton[1]#
+	show(Canton)
+bou <- c("HERAULT (34)", "canton de Montpellier - Castelnau-le-Lez (20)")
+bou
+colnames(bou) <- c("Département", "Canton")#
+	rownames(bou) <- NULL
+bou <- ["HERAULT (34)", "canton de Montpellier - Castelnau-le-Lez (20)"]
+bou
+nr <- nrow(cla)#
+	to <- NULL#
+	for(n in 1:nr)#
+	{#
+		to <- rbind(to, bou)#
+	}#
+	result <- cbind(cla, to)#
+	result <- data.frame(result)
+result
+colnames(result$X1) <- "Département"
+colnames(result$X1) <- c("Département")
+result$X1
+class(bou)
+data.Frame(bou)
+data.frame(bou)
+to <- bou
+bou <- t(to)
+bou
+colnames(bou) <- c("Département", "Canton")
+bou
+rownames(bou) <- NULL#
+	nr <- nrow(cla)#
+	to <- NULL#
+	for(n in 1:nr)#
+	{#
+		to <- rbind(to, bou)#
+	}#
+	result <- cbind(cla, to)#
+	result <- data.frame(result)
+result
+data <- merge(data, result, all=TRUE)
+data
+head(data)
+data <- data[data$Elus == "Oui",]
+elus <- data#
+#
+toto <- table(elus$Département, elus$Nuances)#
+#
+results <- data.frame(toto)#
+colnames(results) <- c("Département", "Nuance", "Elus")#
+#
+toto <- as.data.frame.matrix(toto)#
+dep <- rownames(toto)#
+#
+write.table(toto, "Résultats définitifs.txt")#
+write.table(elus, "Elus par conton.txt")
+source("Resultats.R")

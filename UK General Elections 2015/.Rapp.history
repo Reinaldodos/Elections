@@ -1,0 +1,445 @@
+to <- htmlParse(url)
+ta <- xpathSApply(to,//*[@id="a"]/tbody/tr[1]/th/a, xmlValue)
+ta <- xpathSApply(to,//th/a, xmlValue)
+ta <- xpathSApply(to,''//th/a', xmlValue)
+ta <- xpathSApply(to,'//th/a', xmlValue)
+ta
+ta <- xpathSApply(to,'//th/a', xmlGetAttr)
+ta <- xpathSApply(to,'//th/href', xmlGetAttr)
+ta
+ta <- xpathSApply(to,'//th/href', xmlValue)
+ta
+ta <- xpathSApply(to,'//th/href/a', xmlValue)
+ta
+ta <- xpathSApply(to,'//th/a', xmlValue)
+ta
+ti <- xpathSApply(to,'//th/a', xmlGetAttr, name = "href")
+ti
+const <- cbind(ta,ti)
+const
+nrow(const)
+const[2,1]
+const[2,2]
+const[1,2]
+n <- 1
+url <- paste("http://www.bbc.com/", const[n,2], sep="")
+url
+url <- paste("http://www.bbc.com", const[n,2], sep="")
+to <- readHTMLTable(url)
+url
+to <- readHTMLTable(url)
+doc <- htmlParse(url)
+doc
+xpathSApply(to,'//*[@id="general_election_data-constituency_result_headline"]/div/span[1]', xmlValue)
+to <- htmlParse(url)
+xpathSApply(to,'//*[@id="general_election_data-constituency_result_headline"]/div/span[1]', xmlValue)
+library(XML)#
+url <- "http://www.bbc.com/news/politics/constituencies"#
+constituency <- xpathSApply(to,'//th/a', xmlValue)#
+ti <- xpathSApply(to,'//th/a', xmlGetAttr, name = "href")#
+const <- cbind(constituency,ti)#
+#
+result <- NULL#
+#
+for(n in 1:nrow(const))#
+{#
+	url <- paste("http://www.bbc.com", const[n,2], sep="")	#
+	to <- xpathSApply(to,'//*[@id="general_election_data-constituency_result_headline"]/div/span[1]', xmlValue)#
+	result[n,1] <- to#
+}#
+#
+final <- cbind(const,result)
+const
+url <- "http://www.bbc.com/news/politics/constituencies"
+url
+library(XML)#
+url <- "http://www.bbc.com/news/politics/constituencies"#
+to <- htmlParse(url)#
+constituency <- xpathSApply(to,'//th/a', xmlValue)#
+ti <- xpathSApply(to,'//th/a', xmlGetAttr, name = "href")#
+const <- cbind(constituency,ti)#
+#
+result <- NULL#
+#
+for(n in 1:nrow(const))#
+{#
+	url <- paste("http://www.bbc.com", const[n,2], sep="")	#
+	to <- htmlParse(url)#
+	to <- xpathSApply(to,'//*[@id="general_election_data-constituency_result_headline"]/div/span[1]', xmlValue)#
+	result[n,1] <- to#
+}#
+#
+final <- cbind(const,result)
+const
+result
+library(XML)#
+url <- "http://www.bbc.com/news/politics/constituencies"#
+to <- htmlParse(url)#
+constituency <- xpathSApply(to,'//th/a', xmlValue)#
+ti <- xpathSApply(to,'//th/a', xmlGetAttr, name = "href")#
+const <- cbind(constituency,ti)#
+#
+result <- NULL#
+#
+for(n in 1:nrow(const))#
+{#
+	url <- paste("http://www.bbc.com", const[n,2], sep="")	#
+	to <- htmlParse(url)#
+	to <- xpathSApply(to,'//*[@id="general_election_data-constituency_result_headline"]/div/span[1]', xmlValue)#
+	result <- rbind(result,to)#
+}#
+#
+final <- cbind(const,result)
+library(XML)#
+url <- "http://www.bbc.com/news/politics/constituencies"#
+to <- htmlParse(url)#
+constituency <- xpathSApply(to,'//th/a', xmlValue)#
+ti <- xpathSApply(to,'//th/a', xmlGetAttr, name = "href")#
+const <- cbind(constituency,ti)#
+#
+result <- NULL#
+#
+for(n in 1:nrow(const))#
+{#
+	show(const[n,1])#
+	url <- paste("http://www.bbc.com", const[n,2], sep="")	#
+	to <- htmlParse(url)#
+	to <- xpathSApply(to,'//*[@id="general_election_data-constituency_result_headline"]/div/span[1]', xmlValue)#
+	result <- rbind(result,to)#
+}#
+#
+final <- cbind(const,result)
+result
+library(XML)#
+url <- "http://www.bbc.com/news/politics/constituencies"#
+to <- htmlParse(url)#
+constituency <- xpathSApply(to,'//th/a', xmlValue)#
+ti <- xpathSApply(to,'//th/a', xmlGetAttr, name = "href")#
+const <- cbind(constituency,ti)#
+#
+result <- NULL#
+#
+for(n in 1:nrow(const))#
+{#
+	show(const[n,1])#
+	url <- paste("http://www.bbc.com", const[n,2], sep="")	#
+	to <- htmlParse(url)#
+	to <- xpathSApply(to,'//*[@id="general_election_data-constituency_result_headline"]/div/span[1]', xmlValue)#
+	result <- rbind(result,to)#
+}#
+#
+final <- cbind(const,result)library(XML)#
+url <- "http://www.bbc.com/news/politics/constituencies"#
+to <- htmlParse(url)#
+constituency <- xpathSApply(to,'//th/a', xmlValue)#
+ti <- xpathSApply(to,'//th/a', xmlGetAttr, name = "href")#
+const <- cbind(constituency,ti)#
+#
+result <- NULL#
+#
+for(n in 1:nrow(const))#
+{#
+	name <- const[n,1]#
+	show(name)#
+	url <- paste("http://www.bbc.com", const[n,2], sep="")	#
+	to <- htmlParse(url)#
+	to <- xpathSApply(to,'//*[@id="general_election_data-constituency_result_headline"]/div/span[1]', xmlValue)#
+	result <- rbind(result,to)#
+}#
+#
+final <- cbind(const,result)
+result
+result
+final
+result
+source("Fetch data.R")
+result
+source("Fetch data.R")
+final
+data.frame(final)
+colnames(final)
+colnames(final) <- c("constituency", "link", "result")
+colnames(final)
+data.frame(final)
+res <- data.frame(final)
+res
+table(res)
+final
+res
+res <- select(res, -c("res$link"))
+res <- subset(res, select=-c("res$link"))
+res <- subset(res, select=-c(link))
+res
+table(res)
+head(table(res))
+pivoting(res)
+?pivoting
+??pivoting
+tapply(res)
+tapply(res, res$result)
+?tapply
+by(res$result, res$constituency, sum)
+final
+table(final)
+table(res)
+sum(table(res))
+xsum(table(res))
+by(res$result, res$constituency, num)
+by(res$result, res$constituency, number)
+sapply(res, sum)
+sapply(res, nb)
+summary(res)
+xtabs(res)
+xtabs(data=res)
+summary(res)
+summary(res$result)
+synth <- summary(res$result)
+t(synth)
+synth
+dim(synth)
+synth
+url <- "http://www.bbc.com/news/politics/constituencies/W07000049"
+to <- readHTMLTable(url)
+to <- readHTMLlist(url)
+to <- readHTMLList(url)
+to
+to <- htmlParse(url)
+xpathSApply(to,'//li[@class="party__result--votesnet essential"]/span[1]', xmlValue)
+xpathSApply(to,'//div[@class="party__name--long"]/', xmlValue)
+xpathSApply(to,'//div[@class="party__name--long"]/div', xmlValue)
+xpathSApply(to,'//div[@class="party__name"]/div', xmlValue)
+xpathSApply(to,'//div[@class="party__name"]/div[1]', xmlValue)
+to <- htmlParse(url)#
+parties <- xpathSApply(to,'//li[@class="party__result--votesnet essential"]/span[1]', xmlValue)#
+changes <- xpathSApply(to,'//div[@class="party__name"]/div[1]', xmlValue)
+parties
+cbind(parties, changes)
+length(parties)
+length(changes)
+xpathSApply(to,'//div[@class="party__name"]/div[1]/div', xmlValue)
+xpathSApply(to,'//div[@class="party__name"]/div[1]', xmlValue)
+xpathSApply(to,'//div[@id="general_election_data-constituency_result_table"]/div[@class="party__name"]/div[1]/div', xmlValue)
+xpathSApply(to,'//div[@class="election2015-results election2015-results--constituency"]/div[@class="party__name"]/div[1]/div', xmlValue)
+xpathSApply(to,'//div[@class="election2015-results election2015-results--constituency"]/div[@class="party__name"]/div[1]', xmlValue)
+xpathSApply(to,'//div[@class="election2015-results election2015-results--constituency"]/div[@class="party__name"]/', xmlValue)
+xpathSApply(to,'//div[@class="election2015-results election2015-results--constituency"]/div[@class="party__name"]/span', xmlValue)
+xpathSApply(to,'//div[@class="election2015-results election2015-results--constituency"]/div', xmlValue)
+xpathSApply(to,'//div[@class="election2015-results election2015-results--constituency"]/div[@class="party__name"]/div', xmlValue)
+xpathSApply(to,'//div[@class="election2015-results election2015-results--constituency"]/div[1]/div', xmlValue)
+xpathSApply(to,'//div[@class="election2015-results election2015-results--constituency"]/div/div', xmlValue)
+xpathSApply(to,'//div[@class="election2015-results election2015-results--constituency"]/div/div/span', xmlValue)
+xpathSApply(to,'//div[@class="election2015-results election2015-results--constituency"]/div/div/ul', xmlValue)
+xpathSApply(to,'//div[@id="general_election_data-constituency_result_table"]/div/div[3]/div[1]/div/div[1]', xmlValue)
+xpathSApply(to,'//div[@id="general_election_data-constituency_result_table"]/div/div[3]/div/div/div[1]', xmlValue)
+changes <- xpathSApply(to,'//li[@class="party__result--votesnet essential"]/span[1]', xmlValue)#
+parties <- xpathSApply(to,'//div[@id="general_election_data-constituency_result_table"]/div/div[3]/div/div/div[1]', xmlValue)#
+#
+cbind(parties, changes)
+library(XML)#
+url <- "http://www.bbc.com/news/politics/constituencies"#
+to <- htmlParse(url)#
+constituency <- xpathSApply(to,'//th/a', xmlValue)#
+ti <- xpathSApply(to,'//th/a', xmlGetAttr, name = "href")#
+const <- cbind(constituency,ti)#
+#
+result <- NULL
+n <- 1
+url <- paste("http://www.bbc.com", const[n,2], sep="")	#
+	to <- htmlParse(url)#
+	changes <- xpathSApply(to,'//li[@class="party__result--votesnet essential"]/span[1]', xmlValue)#
+	parties <- xpathSApply(to,'//div[@id="general_election_data-constituency_result_table"]/div/div[3]/div/div/div[1]', xmlValue)#
+	change <- cbind(parties, changes)#
+	colnames(change) <- c("parties", const[n,1])#
+	result <- merge(result, change)
+result
+url <- paste("http://www.bbc.com", const[n,2], sep="")	#
+	to <- htmlParse(url)#
+	changes <- xpathSApply(to,'//li[@class="party__result--votesnet essential"]/span[1]', xmlValue)#
+	parties <- xpathSApply(to,'//div[@id="general_election_data-constituency_result_table"]/div/div[3]/div/div/div[1]', xmlValue)#
+	change <- cbind(parties, changes)#
+	colnames(change) <- c("parties", const[n,1])#
+	result <- merge(result, change)
+result
+change
+result
+result <- NULL
+url <- paste("http://www.bbc.com", const[n,2], sep="")	#
+	to <- htmlParse(url)#
+	changes <- xpathSApply(to,'//li[@class="party__result--votesnet essential"]/span[1]', xmlValue)#
+	parties <- xpathSApply(to,'//div[@id="general_election_data-constituency_result_table"]/div/div[3]/div/div/div[1]', xmlValue)#
+	change <- cbind(parties, changes)#
+	colnames(change) <- c("parties", const[n,1])#
+	result <- merge(result, change)#
+	result <- merge(result, change)
+result
+result
+change
+merge(result, change)
+change <- data.frame(change, stringsAsFactors=FALSE)
+merge(result, change)
+data.frame(result)
+result <- data.frame(result)
+merge(result, change)
+merge(result, change)
+result <- merge(result, change, all=TRUE)
+result
+source("Fetch change.R")
+m <- n
+for(n in m:nrow(const))#
+{#
+	show(n)	#
+	url <- paste("http://www.bbc.com", const[n,2], sep="")	#
+	to <- htmlParse(url)#
+	changes <- xpathSApply(to,'//li[@class="party__result--votesnet essential"]/span[1]', xmlValue)#
+	parties <- xpathSApply(to,'//div[@id="general_election_data-constituency_result_table"]/div/div[3]/div/div/div[1]', xmlValue)#
+	change <- cbind(parties, changes)#
+	colnames(change) <- c("parties", const[n,1])#
+	change <- data.frame(change, stringsAsFactors=FALSE)#
+	result <- merge(result, change, all=TRUE)#
+}
+const
+const[m,1]
+consti <- const[m,1]
+merge(consti, changes, all=TRUE)
+merge(consti, change, all=TRUE)
+source("Fetch change.R")
+result
+source("Fetch change.R")
+gov <- subset(result, parties %in% c("Conservative", "Liberal Democrats"))#
+gouv <- table(gov)
+gouv
+gov
+result
+gov <- subset(result, parties %in% c("Conservative", "Liberal Democrat"))#
+gouv <- table(gov)
+gouv
+gov
+?aggregate
+tapply(gov)
+tapply(gov, INDEX)
+xtabs(gov)
+xtabs(gov, sum)
+summary(gov)
+aggregate(gov$changes, by = list(typ2 = gov$x), sum)
+result$changes <- as.numeric(as.character(result$changes))
+gov <- subset(result, parties %in% c("Conservative", "Liberal Democrat"))#
+aggregate(gov$changes, by = list(typ2 = gov$x), sum)
+gov
+gov <- subset(result, parties %in% c("Conservative", "Liberal Democrat"))#
+aggregate(gov$changes, by = list(typ2 = gov$x), sum)
+?chart
+?graph
+gov <- subset(result, parties %in% c("Conservative", "Liberal Democrat"))#
+dude <- aggregate(gov$changes, by = list(typ2 = gov$x), sum)
+hist(dude)
+hist(dude$typ2)
+hist(dude$x)
+?hist
+aggregate(gov$changes, by = list(constituency = gov$x), sum)
+hist(dude$x)
+plot(dude)
+jitter(dude)
+jitter(dude$x)
+plot(sort(dude))
+plot(sort(dude$x))
+barplot(sort(dude$x))
+barplot(dude)
+barplot(dude$x)
+source("Fetch change.R")
+source("Fetch change.R")
+source("Fetch change.R")
+dude <- aggregate(gov$changes, by = list(constituency = gov$x), sum)#
+barplot(sort(dude$x))
+sort(gov)
+sort(gov$x)
+sort(gov$parties)
+dude
+sort(dude)
+sort(dude$x)
+sort(dude, x)
+sort(dude, dude$x)
+order(dude, dude$x)
+order(dude)
+lab <- subset(result, parties %in% c("Labour"))#
+barplot(sort(lab$changes))
+summary(result)
+dim(result)
+summary(lab)
+summary(dude)
+cons <- subset(result, parties %in% c("Conservative"))#
+barplot(sort(cons$changes))
+barplot(sort(lab$changes))
+barplot(lab$changes, cons$changes)
+barplot(lab$changes, sort(cons$changes))
+barplot(sort(dude$x))
+ukip <- subset(result, parties %in% c("UKIP"))#
+barplot(sort(ukip$changes))
+summary(ukip)
+snp <- subset(result, parties %in% c("SNP"))#
+barplot(sort(snp$changes))
+snp
+result
+head(result)
+snp <- subset(result, parties %in% c("Scottish National Party"))#
+barplot(sort(snp$changes))
+droite <- subset(result, parties %in% c("Conservative", "Liberal Democrat", "UKIP"))#
+droite <- aggregate(droite$changes, by = list(constituency = droite$x), sum)#
+barplot(sort(droite$x))
+gov <- subset(result, parties %in% c("Conservative", "Liberal Democrat"))#
+dude <- aggregate(gov$changes, by = list(constituency = gov$x), sum)#
+barplot(sort(dude$x))
+plot(dude)
+plot(dude, lab)
+par(mfrow = c(2,3))
+par(mfrow = c(2,3))
+plot(dude)
+plot(lab)
+barplot(dude$x)#
+barplot(lab$x)
+par(mfrow = c(1,2))#
+barplot(dude$x)#
+barplot(lab$x)
+split.screen(c(1, 2))#
+barplot(dude$x)#
+barplot(lab$x)
+barplot(lab$x)
+barplot(lab$x)
+lab
+split.screen(c(1, 2))#
+barplot(dude$x)#
+barplot(lab$changes)
+par(mfcol = c(1,3)) #
+barplot(dude$x)#
+barplot(lab$changes)
+par(mfcol = c(1,2)) #
+barplot(sort(dude$x))#
+barplot(sort(lab$changes))
+par(mfcol = c(1,3)) #
+barplot(sort(dude$x))#
+barplot(sort(lab$changes))#
+barplot(sort(ukip$changes))
+par(mfcol = c(1,2)) #
+barplot(sort(dude$x))#
+barplot(sort(lab$changes))#
+jpeg("outfile.jpg", 800, 500)
+png(filename = "outfile.png", width = 800, height = 500); par(mfcol = c(1,2)) ; barplot(sort(dude$x));barplot(sort(lab$changes));dev.off()
+gov <- subset(result, parties %in% c("Conservative", "Liberal Democrat"))#
+dude <- aggregate(gov$changes, by = list(constituency = gov$x), sum)#
+#
+lab <- subset(result, parties %in% c("Labour"))#
+#
+cons <- subset(result, parties %in% c("Conservative"))#
+#
+ukip <- subset(result, parties %in% c("UKIP"))#
+#
+snp <- subset(result, parties %in% c("Scottish National Party"))#
+#
+droite <- subset(result, parties %in% c("Conservative", "Liberal Democrat", "UKIP"))#
+droite <- aggregate(droite$changes, by = list(constituency = droite$x), sum)#
+#
+left <- subset(result, parties %in% c("Labour", "Scottish National Party"))#
+left <- aggregate(left$changes, by = list(constituency = left$x), sum)#
+#
+png(filename = "outfile.png", width = 800, height = 500); par(mfcol = c(1,3)) ; barplot(sort(dude$x));barplot(sort(left$x));barplot(ukip$changes);dev.off()
+par(mfcol = c(1,3)) ; barplot(sort(dude$x));barplot(sort(left$x));barplot(ukip$changes)
+png(filename = "outfile.png", width = 800, height = 500); par(mfcol = c(1,3)) ; barplot(sort(dude$x));barplot(sort(left$x));barplot(sort(ukip$changes));dev.off()
