@@ -1,0 +1,10 @@
+name: soiree_electorale
+title:
+username:
+account: reinaldodos
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 949862
+bundleId: 2109986
+url: https://reinaldodos.shinyapps.io/soiree_electorale/
+when: 1558904998.59609
