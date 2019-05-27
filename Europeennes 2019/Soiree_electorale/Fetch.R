@@ -9,8 +9,7 @@ Results =
     col = file,
     into = c("Region", "Departement", "Ville"),
     regex = ".*--(.*)--(.*)--(.*).json"
-  ) %>%
-data.table()
+  ) 
 
 Results =
   Results %>% group_by(Region, Departement, Ville) %>%
