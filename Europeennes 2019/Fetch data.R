@@ -53,7 +53,11 @@ safeIN = safely(ALL_IN)
 
 Lettres_villes = "Europeennes 2019/sources.rds" %>% readRDS()
 DEJA_FAIT = NULL
+saveRDS(object = DEJA_FAIT, file = "Europeennes 2019/FAIT.rds")
 
 repeat {
+  DEJA_FAIT = read_rds(path = "Europeennes 2019/FAIT.rds")
   Lettres_villes %>% sample(1) %>% walk(safeIN)
+  saveRDS(object = DEJA_FAIT, file = "Europeennes 2019/FAIT.rds")
 }
+

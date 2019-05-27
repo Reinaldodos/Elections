@@ -22,13 +22,16 @@ ui <- fluidPage(# Application title
     # Show a plot of the generated distribution
     mainPanel(
       plotOutput(outputId = "graphique"),
+      selectInput(inputId = "Choix",
+                  label = "Inscrits / Exprimés",
+                  selected = "Exprimes",
+                  choices = c("Inscrits", "Exprimes")),
       plotOutput(outputId = "tableau")
     )
   ))
 
 # Define server logic required to draw a histogram ----
 server <- function(input, output) {
-  # source(file = "Fetch.R")
 
   output$time = renderText({
     paste("Elections européennes",
@@ -38,16 +41,18 @@ server <- function(input, output) {
 
   output$graphique <- renderPlot({
     require(tidyverse)
+    Choix = sym(input$Choix)
     plot =
       Results %>% data.table() %>%
       filter(Listes %in% input$Selection) %>%
       mutate(DOM = case_when(DOM ~ "DOM",
-                             TRUE ~ "Métropole")) %>%
-      ggplot(mapping = aes(y = Score, x = Inscrits, colour = Listes)) +
+                             TRUE ~ "Métropole"),
+             Score = Voix/!!Choix) %>%
+      ggplot(mapping = aes(y = Score, x = !!Choix, colour = Listes)) +
       geom_smooth() +
       scale_x_log10() +
       theme(legend.position = "none") +
-      ylim(0,NA)+
+      ylim(0, NA) +
       facet_wrap(DOM ~ ., scales = "free")
 
     print(plot)
@@ -55,6 +60,7 @@ server <- function(input, output) {
 
   output$tableau <- renderPlot({
     require(tidyverse)
+
     TOP =
       Tableau %>%
       filter(Listes %in% input$Selection)

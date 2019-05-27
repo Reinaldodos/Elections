@@ -8,14 +8,13 @@ Results =
   tidyr::extract(
     col = file,
     into = c("Region", "Departement", "Ville"),
-    regex = ".*--(.*)--(.*)--(.*).json"
-  )
+    regex = "(.*)--(.*)--(.*).json"
+  ) %>%
+  mutate(Region = str_remove_all(string = Region, pattern = "./data/Accueil Européennes 2019")) %>%
+  mutate(Region = str_remove_all(string = Region, pattern = "--"))
 
 Results =
-  Results %>% group_by(Region, Departement, Ville) %>%
-  summarise(Inscrits = sum(Voix)) %>% ungroup %>%
-  inner_join(Results) %>%
-  mutate(Score = Voix / Inscrits) %>%
+  Results %>%
   mutate_all(type.convert) %>%
   data.table()
 
