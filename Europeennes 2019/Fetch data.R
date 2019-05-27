@@ -47,4 +47,6 @@ ALL_IN <- function(lettre_ville) {
   lettre_ville %>% LETTRE() %>% walk(safeFETCH)
 }
 
+
 Lettres_villes %>% walk(ALL_IN)
+
