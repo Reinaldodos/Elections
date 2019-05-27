@@ -7,7 +7,7 @@ Results =
   bind_rows(.id = "file") %>%
   tidyr::extract(
     col = file,
-    into = c("Région", "Departement", "Ville"),
+    into = c("Region", "Departement", "Ville"),
     regex = ".*--(.*)--(.*)--(.*).json"
   )
 
