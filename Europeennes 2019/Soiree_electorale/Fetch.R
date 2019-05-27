@@ -12,7 +12,7 @@ Results =
   )
 
 Results =
-  Results %>% group_by(Région, Departement, Ville) %>%
+  Results %>% group_by(Region, Departement, Ville) %>%
   summarise(Inscrits = sum(Voix)) %>% ungroup %>%
   inner_join(Results) %>%
   mutate(Score = Voix / Inscrits) %>%
