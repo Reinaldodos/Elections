@@ -27,17 +27,19 @@ FETCH <- function(ville) {
                                       nom,
                                       ".json"))
 
+  DEJA_FAIT <<- append(x = DEJA_FAIT, values = ville)
   print(nom)
 }
 
-Lettres_villes = "Europeennes 2019/sources.rds" %>% readRDS()
+
 
 LETTRE <- function(lettre_ville) {
   print(lettre_ville)
   lettre_ville %>%
     read_html() %>% html_nodes(css = ".tableau-communes a") %>%
     html_attr(name = "href") %>% str_remove_all(pattern = "\\.\\./") %>%
-    str_c(url %>% str_remove_all(pattern = "index.html"), .)%>%
+    str_c(url %>% str_remove_all(pattern = "index.html"), .) %>%
+    setdiff(DEJA_FAIT) %>%
     return()
 }
 
@@ -47,6 +49,11 @@ ALL_IN <- function(lettre_ville) {
   lettre_ville %>% LETTRE() %>% walk(safeFETCH)
 }
 
+safeIN = safely(ALL_IN)
 
-Lettres_villes %>% walk(ALL_IN)
+Lettres_villes = "Europeennes 2019/sources.rds" %>% readRDS()
+DEJA_FAIT = NULL
 
+repeat {
+  Lettres_villes %>% sample(1) %>% walk(safeIN)
+}
