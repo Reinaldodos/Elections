@@ -28,7 +28,7 @@ ui <- fluidPage(# Application title
 
 # Define server logic required to draw a histogram ----
 server <- function(input, output) {
-  source(file = "Fetch.R")
+  # source(file = "Fetch.R")
 
   output$time = renderText({
     paste("Elections européennes",
