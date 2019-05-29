@@ -1,0 +1,250 @@
+---
+title: "Clustering des principales listes"
+output:
+  html_document:
+    fig_caption: yes
+    fig_height: 15
+    fig_width: 21
+    highlight: monochrome
+    theme: journal
+    toc: yes
+---
+
+```{r echo=FALSE} 
+knitr::opts_chunk$set(echo=FALSE, message = FALSE)
+```
+
+```{r}
+pacman::p_load(tidyverse, data.table, rio, RSQLite,ggdendro)
+```
+
+On commence par récupérer les informations qui nous intéressent, pour chacun des bureaux de vote.
+
+```{r}
+BASE = src_sqlite(path = "Soiree_electorale/BASE", create = FALSE)
+MAT = 
+  tbl(src = BASE, "Resultats") %>% 
+  as.data.table() %>% 
+  spread(key = Listes, value = Voix) 
+
+MAT = 
+  tbl(src = BASE, "Chiffres_globaux") %>% select(rowid, Abstentions, Blancs, Nuls) %>% 
+  inner_join(x = MAT, copy = T, by = "rowid")
+
+```
+
+
+On s'appuie sur les informations qui nous intéressent, c'est-à-dire l'ensemble des exprimés, les blancs, nuls et abstentions.    
+Il me semble important de conserver l'ensemble des électeurs, pour ne pas avoir de déformations structurelles liées à des des différences d'abstention (étude en soi par ailleurs).
+
+```{r}
+MAT %>% select(-rowid) %>% names
+```
+
+# Premier jet
+Dans un premier temps, on regarde comment se répartissent les listes.   
+Je fais le choix de réaliser une Classification par Ascendance Hiérarchique[^1] sur leur score (normalisé par bureau de vote).
+
+[^1]: http://larmarange.github.io/analyse-R/classification-ascendante-hierarchique.html
+
+```{r}
+hc = 
+  MAT %>% select(-rowid) %>% t() %>% scale %>% 
+  dist() %>% hclust(method = "ward.D") 
+
+hc %>% ggdendrogram(rotate = T) %>% print()
+```
+
+Cette représentation s'appelle un dendogramme[^2]. Elle permet de choisir les regroupements les plus pertinents.
+
+[^2]: https://support.minitab.com/fr-fr/minitab/18/help-and-how-to/modeling-statistics/multivariate/how-to/cluster-observations/interpret-the-results/all-statistics-and-graphs/dendrogram/
+
+Dans ce cas précis, les listes sont regroupées par catégorie de score:
+
+```{r}
+pacman::p_load(dendextend)
+hc %>% 
+  as.dendrogram() %>% 
+  set("branches_k_color", k = 4) %>%
+  plot_horiz.dendrogram() 
+
+```
+
+C'est intéressant (pour plus tard), mais ce n'est pas ce que je cherchais.
+
+## Profils électoraux.
+En fait, ce qu'on cherche, c'est à regouper les listes par profils électoraux, c'est-à-dire à les mettre ensemble quand leurs "points forts" et leurs "points faibles" coïncident.   
+Pour cela, il nous faut calculer la corrélation entre chaque liste.
+
+```{r}
+KOR =
+  MAT %>% select(-rowid) %>% scale %>% 
+  cor(use = "pairwise.complete.obs")
+
+require(ggcorrplot)
+KOR %>% ggcorrplot(type = "upper", hc.order = T)
+```
+
+et de nouveau réaliser un dendogramme.
+
+```{r}
+hc_KOR = 
+  KOR %>% 
+  dist() %>% hclust(method = "ward.D") 
+
+hc_KOR %>% ggdendrogram(rotate = T) %>% print()
+```
+
+et créer des sous-groupes interprétables.
+
+```{r}
+hc_KOR %>% 
+  as.dendrogram() %>% 
+  set("branches_k_color", k = 9) %>%
+  plot_horiz.dendrogram() 
+```
+
+Mais quoi qu'on y fasse, difficile de créer des groupes pertinents: les 21 listes qui ne pèsent quasiment rien viennent systématiquement interférer. On va donc les traiter comme du "bruit", et les exclure.
+
+# Traitement sur les listes principales.
+On écarte donc ces listes:
+
+```{r}
+Tableau = 
+  tbl(src = BASE, "Resultats") %>%
+  group_by(Listes) %>% summarise(TOTAL = sum(Voix, na.rm = T)) %>% ungroup %>%
+  as.data.table() %>% mutate_all(type.convert) %>%
+  mutate(Score = TOTAL/sum(TOTAL))
+
+OUT = 
+  Tableau %>% arrange(desc(TOTAL)) %>%  slice(1:13) %>% 
+  anti_join(x = Tableau, by = c("Listes", "TOTAL", "Score")) %>% 
+  pull(Listes) %>% as.character()
+
+print(OUT)
+
+MAT_princ = MAT %>% select(-OUT)
+
+```
+
+et on reproduit l'analyse
+
+```{r}
+KOR_princ =
+  MAT_princ %>% select(-rowid) %>%
+  cor(use = "pairwise.complete.obs")
+
+require(ggcorrplot)
+KOR_princ %>% ggcorrplot(type = "upper", hc.order = T, lab = T)
+
+```
+
+on obtient le dendogramme suivant:
+
+```{r}
+hc_princ = KOR_princ %>% dist() %>% hclust(method = "ward.D")
+
+hc_princ %>% ggdendrogram(rotate = T)
+```
+
+et les groupes suivants:
+
+```{r}
+hc_princ %>% 
+  as.dendrogram() %>% 
+  set("branches_k_color", k = 6) %>%
+  plot_horiz.dendrogram()
+```
+
+# Interprétation
+## Système et protestataire
+
+Première décomposition à apparaître:
+
+```{r}
+hc_princ %>% 
+  as.dendrogram() %>% 
+  set("branches_k_color", k = 2) %>%
+  plot_horiz.dendrogram()
+```
+
+On peut l'interpréter comme la distinction entre le vote "protestataire" et le vote standard. La question de la liste PCF chez les protestataires d'une part, et l'abstention et Asselineau dans le vote classique d'autre part posent question? 
+
+## Le "monde communiste" existe toujours?
+Deuxième groupe à se détacher: la liste PCF.
+
+```{r}
+hc_princ %>% 
+  as.dendrogram() %>% 
+  set("branches_k_color", k = 3) %>%
+  plot_horiz.dendrogram()
+```
+
+Il y a donc une "spécificité communiste", en termes de profil électoral.
+
+## Les grands blocs n'ont pas disparu
+
+Si on continue, on voit enfin apparaître les oppositions gauche-droite.
+```{r}
+hc_princ %>% 
+  as.dendrogram() %>% 
+  set("branches_k_color", k = 4) %>%
+  plot_horiz.dendrogram()
+```
+
+Très clairement, le vote macroniste a basculé au centre-droit: son profil électoral est très profondément corrélé à celui de l'UDI.    
+Malgré son faible poids, la liste de Delphine Batho semble occuper l'espace qu'occupait Corinne Lepage: un vote écolo-centriste.   
+La gauche n'est pas si morcelée: les 4 listes sont très similaires, avec une légère spécificité pour la France Insoumise.
+
+## Deux formes distinctes de protestations
+On continue, et on voit le "bloc protestataire" se couper en deux.
+
+```{r}
+hc_princ %>% 
+  as.dendrogram() %>% 
+  set("branches_k_color", k = 5) %>%
+  plot_horiz.dendrogram()
+```
+
+Clairement, voter délibérément blanc ou nul n'est pas porteur du même message que voter extrême-droite: il s'agit d'un rejet probablement plus global.     
+Et l'antispécisme, c'est le fascisme.
+
+![](C:/Users/rdossant/Downloads/Orwell.jpg)
+
+## L'abstention, c'est de droite?
+
+Enfin, on voit se distinguer l'abstention du reste des "listes".
+
+```{r}
+hc_princ %>% 
+  as.dendrogram() %>% 
+  set("branches_k_color", k = 6) %>%
+  plot_horiz.dendrogram()
+```
+
+Il est donc peut-être un peu prématuré de dire que les réserves de voix sont à gauche...   
+Et voter Asselineau, c'est voter avec ses pieds.
+
+## Une France insoumise de gauche
+
+C'est seulement à ce degré là de morcellement qu'on voit la FI se démarquer.
+
+```{r}
+hc_princ %>% 
+  as.dendrogram() %>% 
+  set("branches_k_color", k = 7) %>%
+  plot_horiz.dendrogram()
+```
+
+Il y a une petite différence entre les listes "centre-gauche" et la liste France Insoumise. Mais il faut creuser profond pour la trouver.
+
+## On arrête là
+
+Le grain suivant sépare les votes blancs des votes nuls. Cela perd de son intérêt, on arrête là l'analyse.
+
+```{r}
+hc_princ %>% 
+  as.dendrogram() %>% 
+  set("branches_k_color", k = 8) %>%
+  plot_horiz.dendrogram()
+```

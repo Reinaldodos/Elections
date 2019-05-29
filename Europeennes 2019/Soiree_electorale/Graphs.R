@@ -1,30 +1,42 @@
+pacman::p_load(tidyverse, data.table, rio, RSQLite)
 
-Non_exprimes = c("Abstentions", "Nuls", "Blancs")
+"Chargement de la base" %>% print()
 
-Inscrits = Results %>%
-  group_by(Region, Departement, Ville) %>%
-  summarise(Inscrits = sum(Voix)) %>% ungroup
+BASE = src_sqlite(path = "BASE", create = FALSE)
 
-Exprimes =
-  Results %>%
-  filter(!Listes %in% Non_exprimes) %>%
-  group_by(Region, Departement, Ville) %>%
-  summarise(Exprimes = sum(Voix)) %>% ungroup
+"Chargement OK" %>% print()
 
-Results = list(Results, Inscrits, Exprimes) %>% reduce(inner_join)
+"Mise en forme des resultats" %>% print()
 
-Cut =
-  Results %>%
-  filter(!Listes %in% Non_exprimes) %>%
-  summarise(TOT = sum(Voix)) %>% pull(TOT)
+Results =
+  inner_join(
+  tbl(src = BASE, "Resultats") %>%
+    inner_join(tbl(src = BASE, "Bureaux"), by = "rowid") %>%
+    group_by(
+      Code.du.departement,
+      Code.de.la.commune,
+      Listes
+    ) %>%
+    summarise(TOTAL = sum(Voix)),
+  tbl(src = BASE, "Chiffres_globaux") %>%
+    inner_join(tbl(src = BASE, "Bureaux"),by = "rowid") %>%
+    select(-rowid, -Code.du.b.vote) %>%
+    group_by(Code.du.departement, Code.de.la.commune, Libelle.du.departement, Libelle.de.la.commune) %>%
+    summarise_all(.funs = sum),
+  by = c("Code.du.departement", "Code.de.la.commune")) %>%
+  as.data.table() %>% mutate_all(type.convert)
+
+Order = Tableau %>% arrange(desc(TOTAL)) %>% pull(Listes) %>% as.character()
+Results$Listes = factor(x = Results$Listes, levels = Order)
 
 Tableau =
-  Results %>%
-  group_by(Listes) %>%
-  summarise(TOT = sum(Voix))
+  tbl(src = BASE, "Resultats") %>%
+  group_by(Listes) %>% summarise(TOTAL = sum(Voix, na.rm = T)) %>% ungroup %>%
+  as.data.table() %>% mutate_all(type.convert) %>%
+  mutate(Score = TOTAL/sum(TOTAL))
+
+Tableau$Listes = factor(x = Tableau$Listes, levels = Order)
 
 SAFE =
-  Tableau %>% filter(TOT > 0.03 * Cut) %>% pull(Listes) %>%
-  as.character() %>% setdiff(Non_exprimes)
-
-
+  Tableau %>%
+  filter(Score>0.03) %>% pull(Listes) %>% as.character()

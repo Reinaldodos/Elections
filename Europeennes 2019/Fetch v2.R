@@ -15,25 +15,25 @@ Inscrits = input[, 1:20]
 
 output = inner_join(x = Inscrits, y = Scores)
 
-names(output)=names(output) %>% iconv(from = "Latin1", to = "UTF-8")
+names(output) = names(output) %>% iconv(from = "Latin1", to = "UTF-8")
 
 output =
   output %>%
-  mutate_all(.funs = ~ iconv(from = "Latin1", to = "UTF-8", x = .))
+  mutate_all(.funs = ~ iconv(from = "Latin1", to = "UTF-8", x = .)) %>%
+  mutate_all(type.convert) %>%
+  select(-contains("%")) %>% select(-contains("/"))
 
-output =
-  output %>% mutate_all(type.convert)
+Bureaux = output %>% select(rowid, contains("Code"), contains("Libellé")) %>% unique()
+Resultats = output %>% select(rowid, Listes, Voix) %>% unique()
+Chiffres = output %>% select(rowid, c(names(Resultats), names(Bureaux)) %>% setdiff(names(output), .)) %>% unique()
 
-output %>%
-  group_by(Listes, `Libellé de la commune`) %>%
-  summarise(TOT = sum(Voix)) %>% ungroup %>%
-  group_by(`Libellé de la commune`) %>%
-  mutate(Exprimes = sum(TOT)) %>% ungroup %>%
-  ggplot(mapping = aes(
-    x = Exprimes,
-    y = TOT / Exprimes,
-    colour = Listes
-  )) +
-  geom_smooth() +
-  scale_x_log10()
+pacman::p_load(RSQLite)
+BASE = src_sqlite(path = "Europeennes 2019/Soiree_electorale/BASE", create = TRUE)
 
+names(Bureaux) = names(Bureaux) %>% make.names() %>% stringi::stri_trans_general(id = "Latin-ascii")
+names(Chiffres)=names(Chiffres) %>% make.names() %>% stringi::stri_trans_general(id = "Latin-ascii")
+names(Resultats)=names(Resultats) %>% make.names() %>% stringi::stri_trans_general(id = "Latin-ascii")
+
+copy_to(dest = BASE, df = Bureaux, name = "Bureaux", overwrite = T, temporary = F, encoding = "UTF-8")
+copy_to(dest = BASE, df = Chiffres, name = "Chiffres_globaux", overwrite = T, temporary = F, encoding = "UTF-8")
+copy_to(dest = BASE, df = Resultats, name = "Resultats", overwrite = T, temporary = F, encoding = "UTF-8")

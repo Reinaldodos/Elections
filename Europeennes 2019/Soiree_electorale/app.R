@@ -1,8 +1,7 @@
 
 
 library(shiny)
-source(file = "Fetch.R")
-
+source("Graphs.R")
 # Define UI for application that draws a histogram -----
 
 ui <- fluidPage(# Application title
@@ -14,7 +13,7 @@ ui <- fluidPage(# Application title
       checkboxGroupInput(
         inputId = "Selection",
         label = "Listes sélectionnées",
-        selected = as.character(SAFE),
+        selected = SAFE,
         choices = levels(Results$Listes)
       )
     ),
@@ -22,17 +21,18 @@ ui <- fluidPage(# Application title
     # Show a plot of the generated distribution
     mainPanel(
       plotOutput(outputId = "graphique"),
-      selectInput(inputId = "Choix",
-                  label = "Inscrits / Exprimés",
-                  selected = "Exprimes",
-                  choices = c("Inscrits", "Exprimes")),
+      selectInput(
+        inputId = "Choix",
+        label = "Inscrits / Exprimés",
+        selected = "Exprimes",
+        choices = c("Inscrits", "Exprimes")
+      ),
       plotOutput(outputId = "tableau")
     )
   ))
 
 # Define server logic required to draw a histogram ----
 server <- function(input, output) {
-
   output$time = renderText({
     paste("Elections européennes",
           Sys.time(),
@@ -43,12 +43,21 @@ server <- function(input, output) {
     require(tidyverse)
     Choix = sym(input$Choix)
     plot =
-      Results %>% data.table() %>%
+      Results %>% as.data.table() %>%
       filter(Listes %in% input$Selection) %>%
-      mutate(DOM = case_when(DOM ~ "DOM",
-                             TRUE ~ "Métropole"),
-             Score = Voix/!!Choix) %>%
-      ggplot(mapping = aes(y = Score, x = !!Choix, colour = Listes)) +
+      mutate(
+        DOM = case_when(
+          as.numeric(Code.du.departement) > 99 ~ "DOM",
+          as.numeric(Code.du.departement) < 99 ~ "Métropole",
+          TRUE ~ "Etranger"
+        ),
+        Score = TOTAL / !!Choix
+      ) %>%
+      ggplot(mapping = aes(
+        y = Score,
+        x = !!Choix,
+        colour = Listes
+      )) +
       geom_smooth() +
       scale_x_log10() +
       theme(legend.position = "none") +
@@ -70,10 +79,10 @@ server <- function(input, output) {
 
     TOP =
       TOP %>%
-      ggplot(mapping = aes(x = Listes, y = TOT, fill = Listes)) +
+      ggplot(mapping = aes(x = Listes, y = Score, fill = Listes)) +
       geom_bar(stat = "identity") +
       theme(legend.position = "none") +
-      geom_hline(yintercept = c(0.03 * Cut, 0.05 * Cut)) +
+      geom_hline(yintercept = c(0.03, 0.05)) +
       scale_x_discrete(limits = rev(levels(TOP$Listes))) +
       ylab("Total des voix") +
       coord_flip() +
