@@ -170,7 +170,7 @@ hc_princ %>%
 
 On peut l'interpréter comme la distinction entre le vote "protestataire" et le vote standard. La question de la liste PCF chez les protestataires d'une part, et l'abstention et Asselineau dans le vote classique d'autre part posent question? 
 
-## Le "monde communiste" existe toujours?
+## Le "monde communiste" existe toujours
 Deuxième groupe à se détacher: la liste PCF.
 
 ```{r}
