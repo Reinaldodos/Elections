@@ -4,7 +4,7 @@ opendata = "/Users/reinaldodossantos/Downloads/secteurs-des-bureaux-de-vote/"
 input =
   opendata %>% list.files(pattern = "shp", full.names = T) %>%
   st_read(dsn = .)
-str(input)
+
 BASE = src_sqlite(path = "Europeennes 2019/Soiree_electorale/BASE", create = FALSE)
 
 source("Europeennes 2019/Carto/Paris.R")
@@ -22,15 +22,15 @@ koropless =
   inner_join(x = input,
              by = "rowid")
 
-breaks = classInt::classIntervals(var = koropless$EXD, n = 5, style = "pretty")
+breaks = classInt::classIntervals(var = koropless$EXD, n = 8, style = "pretty")
 
 koropless %>%
   mutate(Groupe = cut(EXD, breaks = breaks$brks, include.lowest = T)) %>%
   group_by(Groupe) %>%
-  summarize(EXD = mean(EXD),
+  summarize(EXD = sum(EXD*Inscrits)/sum(Inscrits),
             Inscrits = sum(Inscrits)) %>%
-  cartogram_cont(itermax = 15, weight = "Inscrits") %>%
-  choroLayer(var = "EXD")
+  # cartogram_cont(itermax = 15, weight = "Inscrits") %>%
+  choroLayer(var = "EXD", breaks = breaks$brks)
 
 # Anamorphose -------------------------------------------------------------
 pacman::p_load(cartogram, lwgeom)

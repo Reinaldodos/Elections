@@ -21,7 +21,7 @@ Results =
   spread(key = Bloc, value = Voix)
 
 Results =
-  Results %>% filter(Code.du.departement %in% c("75", "91", "92", "93", "94", "95", "77", "78"))
+  Results %>% filter(Code.du.departement=="33")
 
 # Choropleth -------------------------------------------------------------
 pacman::p_load(cartography)
@@ -29,26 +29,35 @@ koropless =
   Results %>%
   inner_join(x = input, by = "insee")
 
-koropless$EXD %>% hist()
-
 koropless %>%
   choroLayer(var = "EXD",
              nclass = 5,
              method = "sd")
 
+breaks = classInt::classIntervals(var = koropless$EXD, n = 5, style = "sd")
+
+GROUP_KOR =
+  koropless %>%
+  mutate(Groupe = cut(EXD, breaks = breaks$brks, include.lowest = T)) %>%
+  group_by(Groupe) %>%
+  summarize(EXD = sum(EXD * Inscrits) / sum(Inscrits),
+            Inscrits = sum(Inscrits))
+
+GROUP_KOR %>%
+  choroLayer(var = "EXD", breaks = breaks$brks)
+
 # Anamorphose -------------------------------------------------------------
 pacman::p_load(cartogram, lwgeom)
 
 anamorf =
-  koropless %>%
+  GROUP_KOR %>%
   st_cast(to = "MULTIPOLYGON") %>%
   cartogram_cont(weight = "Inscrits",
                  itermax = 2)
 
 anamorf %>%
   choroLayer(var = "EXD",
-             nclass = 5,
-             method = "sd")
+             breaks = breaks$brks)
 
 # Carroyage ---------------------------------------------------------------
 KARO =
@@ -59,8 +68,15 @@ KARO =
 
 KARO %>%
   choroLayer(var = "EXD",
-             nclass = 5,
-             method = "sd")
+             breaks = breaks$brks)
+
+KARO %>%
+  st_join(koropless %>% select(Inscrits, geometry)) %>%
+  mutate(Groupe = cut(EXD, breaks = breaks$brks, include.lowest = T)) %>%
+  group_by(Groupe) %>%
+  summarize(EXD = sum(EXD * Inscrits) / sum(Inscrits),
+            Inscrits = sum(Inscrits)) %>%
+  choroLayer(var = "EXD", breaks = breaks$brks)
 
 # Lissage -----------------------------------------------------------------
 base_temp =
