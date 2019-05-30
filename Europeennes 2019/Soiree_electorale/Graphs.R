@@ -17,12 +17,12 @@ Results =
       Code.de.la.commune,
       Listes
     ) %>%
-    summarise(TOTAL = sum(Voix)),
+    summarise(TOTAL = sum(Voix, na.rm = T)),
   tbl(src = BASE, "Chiffres_globaux") %>%
     inner_join(tbl(src = BASE, "Bureaux"),by = "rowid") %>%
     select(-rowid, -Code.du.b.vote) %>%
     group_by(Code.du.departement, Code.de.la.commune, Libelle.du.departement, Libelle.de.la.commune) %>%
-    summarise_all(.funs = sum),
+    summarise_all(.funs = sum, na.rm=T),
   by = c("Code.du.departement", "Code.de.la.commune")) %>%
   as.data.table() %>% mutate_all(type.convert)
 
