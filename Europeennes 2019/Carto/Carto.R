@@ -1,6 +1,6 @@
 pacman::p_load(tidyverse, data.table, rio, sf)
 
-opendata = "Europeennes 2019/Carto/Communes/"
+opendata = "C:/Users/rdossant/Downloads/"
 
 input =
   opendata %>% list.files(pattern = "\\.shp", full.names = T) %>%
@@ -18,13 +18,12 @@ Results =
   mutate(insee = str_c(Code.du.departement, Code.de.la.commune)) %>%
   select(insee, contains("departement"), Bloc, Voix) %>%
   group_by(insee) %>% mutate(Inscrits = sum(Voix)) %>% ungroup
-  # mutate(Voix = Voix / Inscrits * 100) %>% ungroup %>%
 
 Blocs = Results %>% distinct(Bloc) %>% pull
 
 Results =
   Results %>%
-  # filter(Code.du.departement == "78") %>%
+  filter(Code.du.departement == "80") %>%
   spread(key = Bloc, value = Voix)
 
 # Choropleth -------------------------------------------------------------
@@ -33,11 +32,11 @@ koropless =
   Results %>%
   inner_join(x = input, by = "insee")
 
-koropless %>%
-  mutate_at(.vars = Blocs, .funs = ~100*./Inscrits) %>%
-  choroLayer(var = "EXD",
-             nclass = 5,
-             method = "sd")
+# koropless %>%
+#   mutate_at(.vars = Blocs, .funs = ~100*./Inscrits) %>%
+#   choroLayer(var = "EXD",
+#              nclass = 5,
+#              method = "sd")
 
 pacman::p_load(classInt)
 
@@ -53,8 +52,8 @@ GROUP_KOR =
   summarize(EXD = sum(EXD * Inscrits) / sum(Inscrits),
             Inscrits = sum(Inscrits))
 
-GROUP_KOR %>%
-  choroLayer(var = "EXD")
+# GROUP_KOR %>%
+#   choroLayer(var = "EXD")
 
 # Lissage -----------------------------------------------------------------
 base_temp =
@@ -77,9 +76,9 @@ Liss =
                   iBandwidth = SIGMA * 2,
                   sEPSG = 2154)
 
-Liss %>%
-  mutate_at(.vars = Blocs, .funs = ~100*./Inscrits) %>%
-  choroLayer(var = "EXD", nclass = 5, method = "sd")
+# Liss %>%
+#   mutate_at(.vars = Blocs, .funs = ~100*./Inscrits) %>%
+#   choroLayer(var = "EXD", nclass = 5, method = "sd")
 
 # Anamorphose -------------------------------------------------------------
 pacman::p_load(cartogram, lwgeom)
@@ -88,21 +87,11 @@ anamorf =
   Liss %>%
   st_cast(to = "MULTIPOLYGON") %>%
   cartogram_cont(weight = "Inscrits",
-                 itermax = 12)
+                 maxSizeError = 1.01)
 
-anamorf %>%
-  mutate_at(.vars = Blocs, .funs = ~ 100 * . / Inscrits) %>%
-  choroLayer(var = "EXD", nclass = 5, method = "sd")
+# anamorf %>%
+#   mutate_at(.vars = Blocs, .funs = ~ 100 * . / Inscrits) %>%
+#   choroLayer(var = "EXD", nclass = 5, method = "sd")
 
 # Carroyage ---------------------------------------------------------------
-anamorf %>%
-  mutate_at(.vars = Blocs, .funs = ~ 100 * . / Inscrits) %>%
-  mutate(Groupe = cut(
-    x = EXD,
-    breaks = classIntervals(var = EXD, n = 5, style = "sd")$brks,
-    include.lowest = T
-  )) %>%
-  group_by(Groupe) %>%
-  summarize(EXD = sum(EXD * Inscrits) / sum(Inscrits),
-            Inscrits = sum(Inscrits)) %>%
-  choroLayer(var = "EXD")
+source("Europeennes 2019/Carto/Impression des cartes.R")
