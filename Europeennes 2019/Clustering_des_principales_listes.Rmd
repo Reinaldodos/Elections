@@ -107,19 +107,46 @@ hc_KOR %>%
 Mais quoi qu'on y fasse, difficile de créer des groupes pertinents: les 21 listes qui ne pèsent quasiment rien viennent systématiquement interférer. On va donc les traiter comme du "bruit", et les exclure.
 
 # Traitement sur les listes principales.
+## Analyse dimensionnelle
+Comment bien dissocier ces listes? Faut-il prendre un critère arbitraire? 
+
+Je fais le choix de m'en remettre à une analyse factorielle. Combien de dimensions sont porteuses de sens?
+
+```{r}
+pacman::p_load(psych, GPArotation)
+
+FA = fa(nfactors = 37, r = MAT, rotate = "varimax")
+
+FA$values %>% data.table(Value=.) %>% rowid_to_column() %>% 
+  ggplot(mapping = aes(x=rowid, y = Value))+
+  geom_point()+
+  geom_hline(yintercept = 1, colour = "red")
+```
+
+3 dimensions, 4 maximum. Soit le découpage suivant:
+
+```{r}
+hc %>% 
+  as.dendrogram() %>% 
+  set("branches_k_color", k = 4) %>%
+  plot_horiz.dendrogram() 
+```
+
+## Sélection des listes
 On écarte donc ces listes:
 
 ```{r}
-Tableau = 
-  tbl(src = BASE, "Resultats") %>%
-  group_by(Listes) %>% summarise(TOTAL = sum(Voix, na.rm = T)) %>% ungroup %>%
-  as.data.table() %>% mutate_all(type.convert) %>%
-  mutate(Score = TOTAL/sum(TOTAL))
+Groupes =
+  hc %>%
+  cutree(k = 4) %>%
+  as.data.table(keep.rownames = T) %>%
+  rename(Listes = "rn", Groupe = ".")
 
-OUT = 
-  Tableau %>% arrange(desc(TOTAL)) %>%  slice(1:13) %>% 
-  anti_join(x = Tableau, by = c("Listes", "TOTAL", "Score")) %>% 
-  pull(Listes) %>% as.character()
+OUT =
+  Groupes %>%
+  filter(Listes=="ESPERANTO") %>%
+  distinct(Groupe) %>%
+  semi_join(x = Groupes, by = "Groupe") %>% pull(Listes)
 
 print(OUT)
 
@@ -147,25 +174,24 @@ hc_princ = KOR_princ %>% dist() %>% hclust(method = "ward.D")
 hc_princ %>% ggdendrogram(rotate = T)
 ```
 
-et les groupes suivants:
+# Interprétation
 
 ```{r}
-hc_princ %>% 
-  as.dendrogram() %>% 
-  set("branches_k_color", k = 6) %>%
-  plot_horiz.dendrogram()
+DEKOUP_princ <- function(N) {
+  hc_princ %>% 
+    as.dendrogram() %>% 
+    set("branches_k_color", k = N) %>%
+    plot_horiz.dendrogram()
+}
 ```
 
-# Interprétation
+
 ## Système et protestataire
 
 Première décomposition à apparaître:
 
 ```{r}
-hc_princ %>% 
-  as.dendrogram() %>% 
-  set("branches_k_color", k = 2) %>%
-  plot_horiz.dendrogram()
+DEKOUP_princ(N = 2)
 ```
 
 On peut l'interpréter comme la distinction entre le vote "protestataire" et le vote standard. La question de la liste PCF chez les protestataires d'une part, et l'abstention et Asselineau dans le vote classique d'autre part posent question? 
@@ -174,10 +200,7 @@ On peut l'interpréter comme la distinction entre le vote "protestataire" et le 
 Deuxième groupe à se détacher: la liste PCF.
 
 ```{r}
-hc_princ %>% 
-  as.dendrogram() %>% 
-  set("branches_k_color", k = 3) %>%
-  plot_horiz.dendrogram()
+DEKOUP_princ(N = 3)
 ```
 
 Il y a donc une "spécificité communiste", en termes de profil électoral.
@@ -186,10 +209,7 @@ Il y a donc une "spécificité communiste", en termes de profil électoral.
 
 Si on continue, on voit enfin apparaître les oppositions gauche-droite.
 ```{r}
-hc_princ %>% 
-  as.dendrogram() %>% 
-  set("branches_k_color", k = 4) %>%
-  plot_horiz.dendrogram()
+DEKOUP_princ(N = 4)
 ```
 
 Très clairement, le vote macroniste a basculé au centre-droit: son profil électoral est très profondément corrélé à celui de l'UDI.    
@@ -200,10 +220,7 @@ La gauche n'est pas si morcelée: les 4 listes sont très similaires, avec une l
 On continue, et on voit le "bloc protestataire" se couper en deux.
 
 ```{r}
-hc_princ %>% 
-  as.dendrogram() %>% 
-  set("branches_k_color", k = 5) %>%
-  plot_horiz.dendrogram()
+DEKOUP_princ(N = 5)
 ```
 
 Clairement, voter délibérément blanc ou nul n'est pas porteur du même message que voter extrême-droite: il s'agit d'un rejet probablement plus global.     
@@ -211,40 +228,54 @@ Et l'antispécisme, c'est le fascisme.
 
 ![](C:/Users/rdossant/Downloads/Orwell.jpg)
 
-## L'abstention, c'est de droite?
-
-Enfin, on voit se distinguer l'abstention du reste des "listes".
-
-```{r}
-hc_princ %>% 
-  as.dendrogram() %>% 
-  set("branches_k_color", k = 6) %>%
-  plot_horiz.dendrogram()
-```
-
-Il est donc peut-être un peu prématuré de dire que les réserves de voix sont à gauche...   
-Et voter Asselineau, c'est voter avec ses pieds.
-
 ## Une France insoumise de gauche
 
 C'est seulement à ce degré là de morcellement qu'on voit la FI se démarquer.
 
 ```{r}
-hc_princ %>% 
-  as.dendrogram() %>% 
-  set("branches_k_color", k = 7) %>%
-  plot_horiz.dendrogram()
+DEKOUP_princ(N = 6)
 ```
 
 Il y a une petite différence entre les listes "centre-gauche" et la liste France Insoumise. Mais il faut creuser profond pour la trouver.
 
-## On arrête là
+## Et ensuite? 
 
-Le grain suivant sépare les votes blancs des votes nuls. Cela perd de son intérêt, on arrête là l'analyse.
+On voit les blocs se découper ensuite progressivement:
+
++   Les blancs et les nuls se séparent
++   L'abstention se détache du bloc de droite (reports potentiels?)
++   Le Parti Animalsite se détache de l'extrême-droite
++   A ce moment seulement, la droite se détahce du bloc "centre-droit macroniste"
 
 ```{r}
-hc_princ %>% 
-  as.dendrogram() %>% 
-  set("branches_k_color", k = 8) %>%
-  plot_horiz.dendrogram()
+7:10 %>% walk(.f = DEKOUP_princ)
 ```
+
+# Conclusion
+Pour la suite de l'étude, on conservera donc 8 blocs, afin d'isoler l'abstention. Il est important de pouvoir la conserver comme un bloc indépendnant, sans quoi la droite sera diluée dans le bloc "droite et abstention"
+
+```{r}
+Blocs =
+  hc_princ %>%
+  cutree(k = 8) %>%
+  as.data.table(keep.rownames = T) %>%
+  rename(Listes = "rn", Groupe = ".") %>%
+  mutate(
+    Bloc = case_when(
+      Groupe == 1 ~ "EXD",
+      Groupe == 2 ~ 'Gauche',
+      Groupe == 4 ~ "Droite",
+      Groupe == 5 ~ "PCF",
+      TRUE ~ Listes
+    )
+  ) 
+
+Blocs%>%
+  split(x = .$Listes, f = .$Bloc)
+
+```
+
+```{r}
+source("Bloc bureau commune.R")
+```
+

@@ -1,17 +1,8 @@
 
-Blocs =
-  hc_princ %>% cutree(k = 6) %>%
-  as.data.table(keep.rownames = T) %>%
-  rename(Listes = "rn", Groupe = ".") %>%
-  inner_join(y = cbind.data.frame(
-    Groupe = 1:6,
-    Bloc = c("EXD", "Abstention", "Gauche", "Droite", "PCF", "Blancs/Nuls")
-  ))
-
 Results_blocs =
   MAT %>%
   gather(key = Listes, value = Voix, -rowid) %>%
-  inner_join(y = Blocs) %>%
+  inner_join(y = Blocs, by = "Listes") %>%
   group_by(rowid, Bloc) %>%
   summarise(Voix = sum(Voix)) %>% ungroup
 
