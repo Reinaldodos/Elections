@@ -1,6 +1,8 @@
 pacman::p_load(tidyverse, data.table, rio, sf)
 
-opendata = "C:/Users/rdossant/Downloads/"
+# opendata = "C:/Users/rdossant/Downloads/"
+opendata = "~/Downloads/"
+
 
 input =
   opendata %>% list.files(pattern = "\\.shp", full.names = T) %>%
