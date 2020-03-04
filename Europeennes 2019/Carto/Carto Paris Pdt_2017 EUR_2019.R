@@ -24,7 +24,8 @@ Bureaux_Pdt =
   filter(Code.du.departement=="75")
 
 MAT_commune =
-  "Europeennes 2019/Data Pdt_2017 et EUR_2019.rds" %>% read_rds() %>%
+  "Europeennes 2019/Comparaison avec Pdt 2017/Data Pdt_2017 et EUR_2019.rds" %>%
+  read_rds() %>%
   gather(key = Listes, value = Voix,-rowid) %>%
   filter(Voix > 0) %>%
   semi_join(y = Bureaux_Pdt) %>%
@@ -62,6 +63,7 @@ Blocs =
 
 Blocs %>% split(f = as.character(.$Bloc), x = .$Liste)
 
+pacman::p_load(magrittr)
 Blocs %<>%
   mutate(Bloc=
            recode_factor(.x = Bloc,
@@ -74,7 +76,7 @@ Blocs %<>%
 
 Blocs %>% split(f = as.character(.$Bloc), x = .$Liste)
 
-MAT_PARIS=
+MAT_PARIS =
   MAT_commune %>%
   gather(key = Liste, value = Voix, -rowid) %>%
   inner_join(y=Blocs) %>%
