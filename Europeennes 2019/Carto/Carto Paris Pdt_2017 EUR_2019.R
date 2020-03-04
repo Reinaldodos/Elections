@@ -106,7 +106,9 @@ input =
 
 pacman::p_load(cartography, sf, osrm, rosm, ggmap)
 
-Blocs$Bloc %>% levels %>% purrr::set_names() %>%
+
+pdf(file = "Europeennes 2019/Carto/Cartes.pdf")
+Blocs$Bloc %>% levels %>% setdiff("WTF") %>%  purrr::set_names() %>%
   walk(.f = ~ choroLayer(
     x = input %>% mutate_at(.vars = levels(Blocs$Bloc),
                             .funs = ~ 100 * .),
@@ -114,4 +116,12 @@ Blocs$Bloc %>% levels %>% purrr::set_names() %>%
     nclass = 5,
     method = "fisher-jenks"
   ))
+dev.off()
 
+
+
+pdf(file = "Europeennes 2019/Comparaison avec Pdt 2017/Dendogrammes.pdf")
+hc %>% ggdendrogram(rotate = T)
+hc_princ %>% ggdendrogram(rotate = T)
+PHYLO(hc_princ = hc_paris, N = 6, type = "cladogram")
+dev.off()

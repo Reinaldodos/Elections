@@ -27,6 +27,7 @@ hc_princ = KOR_princ %>% dist() %>% hclust(method = "ward.D")
 
 
 PHYLO <- function(N, hc_princ, ...) {
+  require(ape)
   colours = RColorBrewer::brewer.pal(n = N, name = "Set2")
   clus4 = cutree(hc_princ,k = N)
   plot(
@@ -38,5 +39,5 @@ PHYLO <- function(N, hc_princ, ...) {
 
 hc_princ %>% ggdendrogram(rotate = T)
 
-PHYLO(hc_princ = hc_princ, N = 4, type = "radial")
+PHYLO(hc_princ = hc_princ, N = 5, type = "cladogram")
 
