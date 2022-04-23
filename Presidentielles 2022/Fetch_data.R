@@ -1,104 +1,79 @@
-require(rvest)
-require(magrittr)
 require(tidyverse)
+require(magrittr)
+require(data.table)
 
-url =
-  "https://www.resultats-elections.interieur.gouv.fr/presidentielle-2022/"
+input =
+  "~/Téléchargements/resultats-par-niveau-subcom-t1-france-entiere.xlsx" %>%
+  # "~/Téléchargements/resultats-par-niveau-burvot-t1-france-entiere.xlsx" %>%
+  readxl::read_excel()
 
-Get_url_departements <- function(url) {
-  Departements =
-    url %>% read_html() %>%
-    html_elements(css = "#listeDpt") %>%
-    html_children() %>%
-    html_attr(name = "value")
+input %<>% janitor::clean_names()
+input %<>% rowid_to_column()
 
-  Departements =
-    url %>%
-    str_remove_all(pattern = "index.html") %>%
-    str_c(., Departements)
+input %>% sample_n(1) %>% as.list()
 
-  return(Departements)
+CLINNE <- function(data) {
+  names(data) = c("rowid", "candidat", "voix")
+  return(data)
 }
+Scores =
+  map(.x = 7*0:11, .f = ~input[,c(1, 23 + ., 25 + .)]) %>%
+  map(.f = CLINNE) %>%
+  rbindlist()
+Bureaux = input[, 1:5]
 
-Departements = Get_url_departements(url = url)
+Abstention =
+  input %>% select(rowid, abstentions, blancs, nuls) %>%
+  pivot_longer(cols = -rowid,
+               names_to = "candidat",
+               values_to = "voix")
 
-get_liste_communes <- function(departement) {
-  Liste_Communes =
-    departement %>%
-    read_html() %>%
-    html_elements(css = ".span8 a") %>%
-    html_attr(name = "href")
+output =
+  bind_rows(Scores, Abstention) %>%
+  inner_join(x = Bureaux, by = "rowid")
 
-  Liste_Communes =
-    departement %>%
-    str_remove_all(pattern = "index.html") %>%
-    str_c(., Liste_Communes)
+output %<>%
+  group_by(rowid) %>%
+  mutate(score = voix/sum(voix)) %>%
+  ungroup()
 
-  return(Liste_Communes)
-}
+DATA =
+  output %>%
+  mutate(code_de_la_commune =
+           str_c("00000", code_de_la_commune) %>%
+           str_sub(start = -3)) %>%
+  mutate(insee = str_c(code_du_departement, code_de_la_commune)) %>%
+  select(insee, contains("departement"), candidat, score, voix)
 
-Liste_Communes = map(.x = Departements, .f = get_liste_communes)
-Liste_Communes %<>% flatten_chr()
+input_2017 =
+  "https://www.data.gouv.fr/fr/datasets/r/f4c23dab-46ff-4799-b217-1ab29db7938b" %>%
+  rio::import(format = "csv") %>%
+  rowid_to_column()
 
-get_noms_communes <- function(nom_commune, departement) {
-  Noms_communes =
-    nom_commune %>%
-    read_html() %>%
-    html_elements(css = ".tableau-communes a") %>%
-    html_attr(name = "href")
+output_2017 =
+  input_2017 %>%
+  mutate_at(.vars = vars(ends_with("_ins")),
+            .funs = ~.*Inscrits/100) %>%
+  select(rowid, ends_with("_ins")) %>%
+  select(-Votants_ins, -Exprimés_ins) %>%
+  gather(key = candidat, value = score, -rowid) %>%
+  left_join(x = input_2017 %>% select(rowid, insee = CodeInsee),
+            by = "rowid") %>%
+  group_by(insee, candidat) %>%
+  summarise(voix = sum(score)) %>%
+  mutate(score = voix /sum(voix)) %>% ungroup() %>%
+  mutate_at(.vars = "candidat",
+            .funs = str_remove_all,
+            pattern = "_ins$")
 
-  if (length(Noms_communes) == 0)
-    return(nom_commune)
 
-  toto = nom_commune %>% str_split(pattern = "/") %>% flatten_chr()
+output_2017 %<>% mutate_at(.vars = "candidat", .funs = str_to_title)
+DATA %<>% mutate_at(.vars = "candidat", .funs = str_to_title)
 
-  Noms_communes =
-    nom_commune %>%
-    str_remove_all(pattern = toto[length(toto)])  %>%
-    str_c(., Noms_communes)
+FINAL =
+  list(
+    "2017" = output_2017,
+    "2022" = DATA) %>%
+  bind_rows(.id = "annee")
 
-  return(Noms_communes)
-}
 
-Communes = map(.x = Liste_Communes, .f = get_noms_communes)
-Communes %<>% flatten_chr()
-
-Communes %<>% str_subset(pattern = "#", negate = T)
-
-FICHIERS =
-  list.files(path = "Presidentielles 2022/data/",
-             pattern = "json")
-
-Stash = Communes
-
-TOTO = Stash %>% janitor::make_clean_names() %>% str_c(., ".json")
-
-Stash = Stash[!TOTO %in% FICHIERS]
-
-while (length(Stash) > 0) {
-  cat("Still to go:", length(Stash), "/", length(Communes), "\n")
-  commune = Stash %>% sample(1)
-
-  resultats =
-    commune %>%
-    read_html() %>%
-    html_table()
-
-  if (length(resultats) == 3) {
-    names(resultats) = c("TITRE",
-                         "Scores T1",
-                         "Global T1")
-
-    nom_fichier = commune %>% janitor::make_clean_names()
-
-    resultats %>% jsonlite::toJSON(pretty = T) %>%
-      write(file = str_c("Presidentielles 2022/data/",
-                         nom_fichier,
-                         ".json"))
-
-  }
-  toto = commune %>% str_split(pattern = "/") %>% flatten_chr()
-  Stash = str_subset(string = Stash,
-                     pattern = toto[length(toto)],
-                     negate = T)
-}

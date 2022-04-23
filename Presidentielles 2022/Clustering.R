@@ -1,63 +1,17 @@
-pacman::p_load(tidyverse, data.table, rio, RSQLite, ggdendro, magrittr)
-input =
-  "Presidentielles 2022/data/" %>%
-  list.files(full.names = T, pattern = ".json") %>%
-  rio::import_list()
 
-input %<>% purrr::transpose()
-
-GLOBAL =
-  input$`Global T1` %>%
-  rbindlist(idcol = "file") %>%
-  janitor::clean_names() %>%
-  transmute(file,
-            Candidat = x1,
-            Voix = nombre %>%
-              str_remove_all(pattern = "[^[0-9]]") %>%
-              as.integer()) %>%
-  filter(Candidat %in% c("Abstentions", "Blancs", "Nuls"))
-
-DATA =
-  input$`Scores T1` %>%
-  rbindlist(idcol = "file") %>%
-  janitor::clean_names() %>%
-  transmute(file, Candidat = liste_des_candidats,
-            Voix = voix %>%
-              str_remove_all(pattern = "[^[0-9]]") %>%
-              as.integer()) %>%
-  bind_rows(GLOBAL)
-
-DATA %<>%
-  filter(
-    str_detect(string = file, pattern = "html"),
-    str_detect(string = file, pattern = "013055.html",
-               negate = TRUE))
-
-DATA %>%
-  group_by(Candidat) %>%
-  summarise(Voix = sum(Voix)) %>%
-  arrange(-Voix) %>%
-  data.table()
-
-DATA2 =
-  DATA %>%
-  group_by(file) %>%
-  mutate(Voix = Voix/sum(Voix)) %>% ungroup()
-
-DATA %>%
-  ggplot(mapping = aes(x = Voix, y = Candidat)) +
-  geom_violin()
+FINAL %<>%
+  select(insee,annee, candidat, score) %>%
+  mutate_at(.vars = "candidat", .funs = str_to_title)
 
 KOR =
-  DATA2 %>%
-  spread(key = Candidat, value = Voix, fill = 0) %>%
-  select(-file) %>%
-  # t() %>% scale() %>% t() %>%
-  # scale() %>%
-  cor()
+  FINAL %>%
+  filter(annee == "2022") %>%
+  tidyr::unite(col = candidat, candidat, annee) %>%
+  spread(candidat, score) %>%
+  column_to_rownames(var = "insee") %>%
+  cor(use = "pairwise.complete.obs")
 
 KOR %>% ggcorrplot::ggcorrplot(hc.order = T)
-                               # lab = T, type = "lower")
 
 CLUST = KOR %>% dist() %>% hclust()
 
@@ -80,10 +34,16 @@ Blocs =
       TRUE ~ Listes
     )) %>% as_tibble()
 
-DATA %>%
-  inner_join(y = Blocs, by = c("Candidat" = "Listes")) %>%
-  group_by(Bloc) %>%
-  summarise(Voix = sum(Voix)) %>%
-  mutate(Score = scales::percent(Voix/sum(Voix))) %>%
-  arrange(-Voix) %>%
-  data.table()
+FINAL %<>%
+  tidyr::unite(col = Listes, candidat, annee, remove = F) %>%
+  inner_join(y = Blocs, by = "Listes", copy = TRUE)
+
+list(
+  "2017" = output_2017,
+  "2022" = DATA) %>%
+  bind_rows(.id = "annee") %>%
+  tidyr::unite(col = Listes, candidat, annee, remove = F) %>%
+  inner_join(y = Blocs, by = "Listes", copy = TRUE) %>%
+  group_by(candidat, annee) %>%
+  summarise(voix = sum(voix, na.rm = T)) %>%
+  spread(key = annee, value = voix)
