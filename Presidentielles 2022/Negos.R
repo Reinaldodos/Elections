@@ -9,7 +9,7 @@ Gauche = c(
 Proportionnelle =
   Scores %>%
   mutate(candidat = str_c(candidat, "_T1")) %>%
-  # filter(candidat %in% Gauche) %>%
+  filter(candidat %in% Gauche) %>%
   group_by(candidat) %>%
   summarise(voix = sum(voix)) %>%
   mutate(Sieges = round(577 * voix / sum(voix))) %>%
@@ -27,7 +27,7 @@ Scores_Gauche =
 Negos =
   Scores_circo %>%
   gather(key = Circo, value = score, -candidat) %>%
-  # filter(candidat %in% Gauche) %>%
+  filter(candidat %in% Gauche) %>%
   group_by(candidat) %>%
   mutate(Rank = dense_rank(-score)) %>% ungroup() %>%
   inner_join(y = Proportionnelle)

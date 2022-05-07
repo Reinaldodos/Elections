@@ -1,6 +1,4 @@
-require(tidyverse)
-require(magrittr)
-require(data.table)
+pacman::p_load(tidyverse, magrittr, data.table, janitor, readxl)
 
 input =
   "~/Téléchargements/resultats-par-niveau-burvot-t1-france-entiere.xlsx" %>%
@@ -35,3 +33,5 @@ output_T1 %<>%
   mutate(score = voix/sum(voix)) %>%
   ungroup()
 
+rm(input, Scores, Abstention)
+gc()
