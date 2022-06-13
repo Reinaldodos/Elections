@@ -19,6 +19,8 @@ Selection =
   distinct() %>%
   mutate_at(.vars = c("% Inscrits", "% Exprimés"), .funs = to_numeric)
 
+saveRDS(object = Selection, file = "Legislatives 2022/resultats.rds")
+
 Elus =
   Selection %>%
   filter(`% Exprimés` > 50, `% Inscrits` > 25)
