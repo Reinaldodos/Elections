@@ -1,5 +1,5 @@
-source(file = "Presidentielles 2022/Fetch_data_bdv.R")
-source(file = "Presidentielles 2022/Fetch_data_bdv_T2.R")
+source(file = "Legislatives 2022/Fetch_data_bdv.R")
+source(file = "Legislatives 2022/Fetch_data_bdv_T2.R")
 # Tripoter l'abstention (a bit) -------------------------------------------
 Electorat_stable =
   list(
@@ -48,11 +48,12 @@ input =
 input_Sankey =
   input %>%
   tidyr::unite(col = candidat, candidat, Tour) %>%
-  distinct(rowid, candidat, voix) %>%
+  group_by(rowid, candidat) %>%
+  summarise(voix = sum(voix, na.rm = T), .groups = "drop") %>%
   spread(key = candidat, value = voix, fill = 0)
 
 input_Sankey %<>% janitor::clean_names()
-input_Sankey %<>% semi_join(y = Electorat_stable, by = "rowid")
+# input_Sankey %<>% semi_join(y = Electorat_stable, by = "rowid")
 
 input_Sankey %<>%
   mutate_at(.vars = vars(contains("_t")),

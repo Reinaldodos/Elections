@@ -3,7 +3,7 @@ require(magrittr)
 require(data.table)
 
 input =
-  "~/Téléchargements/resultats-par-niveau-burvot-t2-france-entiere.xlsx" %>%
+  "Presidentielles 2022/resultats-par-niveau-burvot-t2-france-entiere.xlsx" %>%
   readxl::read_excel()
 
 input %<>% janitor::clean_names()

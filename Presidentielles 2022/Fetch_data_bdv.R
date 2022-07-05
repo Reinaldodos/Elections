@@ -1,7 +1,7 @@
 pacman::p_load(tidyverse, magrittr, data.table, janitor, readxl)
 
 input =
-  "~/Téléchargements/resultats-par-niveau-burvot-t1-france-entiere.xlsx" %>%
+  "Presidentielles 2022/resultats-par-niveau-burvot-t1-france-entiere.xlsx" %>%
   readxl::read_excel()
 
 input %<>% janitor::clean_names()
