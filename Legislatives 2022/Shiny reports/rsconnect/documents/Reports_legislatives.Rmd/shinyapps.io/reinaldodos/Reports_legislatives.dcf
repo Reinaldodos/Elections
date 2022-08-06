@@ -1,0 +1,13 @@
+name: Reports_legislatives
+title: Reports_legislatives
+username:
+account: reinaldodos
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6606355
+bundleId: 6078210
+url: https://reinaldodos.shinyapps.io/Reports_legislatives/
+when: 1657200058.48196
+lastSyncTime: 1657200058.48199
+asMultiple: FALSE
+asStatic: FALSE

@@ -1,0 +1,64 @@
+---
+title: "Report de voix aux législatives"
+author: "Reinaldo DOS SANTOS"
+date: '2022-07-07'
+output: flexdashboard::flex_dashboard
+runtime: shiny
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, echo = FALSE)
+```
+
+```{r global, include=FALSE}
+library(rio)
+library(tidyverse)
+library(shiny)
+library(htmlwidgets)
+
+source(file = "sankey_fonctions.R")
+Reports = rio::import(file = "Reports_circo.rds")
+```
+
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+```{r}
+selectInput(inputId = "dpt", label = "Département", 
+            choices = unique(Reports$libelle_du_departement), 
+            multiple = FALSE)
+
+selectInput(inputId = "circo", label = "Circonscription", 
+            choices = textOutput(outputId = "circos"), 
+            multiple = FALSE)
+
+```
+
+Column
+-----------------------------------------------------------------------
+
+### Report de voix dans la circonscription
+
+```{r}
+library(networkD3)
+observeEvent(eventExpr = input$dpt, 
+             handlerExpr = 
+  {
+    updateSelectInput(inputId = "circo", 
+                      choices = Reports %>%
+      filter(libelle_du_departement == input$dpt) %>% 
+      distinct(libelle_de_la_circonscription) %>% pull())
+  }
+)
+
+renderSankeyNetwork({
+  Reports %>%
+    filter(libelle_du_departement == input$dpt,
+           libelle_de_la_circonscription == input$circo) %>%
+    Get_Sankey()
+})
+
+```
+

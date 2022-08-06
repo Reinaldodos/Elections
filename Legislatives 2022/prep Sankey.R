@@ -17,6 +17,8 @@ input %<>%
   select(-rowid) %>%
   inner_join(x = Bureaux)
 
+input %>% saveRDS(file = "Legislatives 2022/resultats_raw.rds")
+
 Electorat_stable =
   input %>%
   group_by(Tour, rowid) %>%
@@ -65,8 +67,13 @@ input %<>%
   select(-rowid) %>%
   inner_join(x = Bureaux)
 
+resultats =
+  input %>%
+  tidyr::unite(col = candidat, candidat, Tour) %>%
+  transmute(libelle_du_departement, libelle_de_la_circonscription,
+            candidat = str_to_lower(candidat), voix)
 
-
+resultats %>% saveRDS(file = "Legislatives 2022/resultats.rds")
 
 source(file = "Legislatives 2022/sankey_fonctions.R")
 

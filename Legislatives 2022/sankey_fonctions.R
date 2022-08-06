@@ -69,7 +69,7 @@ Get_Sankey <- function(links) {
     Target = "IDtarget",
     Value = "REPORT_voix",
     NodeID = "name",
-    sinksRight = FALSE
+    sinksRight = FALSE, units = "voix"
   )
   return(p)
 }
