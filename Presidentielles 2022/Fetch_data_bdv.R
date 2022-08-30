@@ -28,6 +28,8 @@ output_T1 =
   bind_rows(Scores, Abstention) %>%
   inner_join(x = Bureaux, by = "rowid")
 
+
+
 output_T1 %<>%
   group_by(rowid) %>%
   mutate(score = voix/sum(voix)) %>%
