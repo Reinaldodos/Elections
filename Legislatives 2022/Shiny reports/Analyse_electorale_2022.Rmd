@@ -1,0 +1,96 @@
+---
+title: "Analyse électorale 2022"
+output: flexdashboard::flex_dashboard
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, echo = FALSE)
+```
+
+```{r global, include=FALSE}
+library(rio)
+library(tidyverse)
+library(shiny)
+library(htmlwidgets)
+```
+
+
+Segmentation par circonscription
+========
+
+```{r}
+Circos = rio::import(file = "output par circo.rds")
+```
+
+Column
+------------------------------
+
+```{r}
+Circos$Carte_circos %>%
+  ggplot() +
+  geom_sf(mapping = aes(fill = groupe, colour = groupe)) +
+  scale_fill_brewer(palette = "Paired", 
+                    aesthetics = c("fill", "colour"),
+                    guide = "none") +
+  geom_sf(data = Circos$departements, alpha = 0) +
+  theme_void()
+```
+
+Column
+------------------------------
+
+```{r}
+Circos$Scores_circo %>% 
+  mutate_at(.vars = "candidat", .funs = str_to_title) %>% 
+  ggplot(mapping = aes(x = voix, y = candidat,
+                       fill = Groupe)) +
+  geom_bar(stat = "identity",
+           position = "dodge", orientation = "y") +
+  scale_fill_brewer(palette = "Paired", 
+                    aesthetics = c("fill", "colour"),
+                    guide = "none") +
+  scale_y_discrete(limits = rev) +
+  facet_wrap(facets = ~Tour, scales = "free_x") +
+  theme_minimal()
+```
+
+
+Segmentation par EPCI
+========
+
+```{r}
+EPCI = rio::import(file = "output par EPCI.rds")
+```
+
+Column
+------------------------------
+
+```{r}
+EPCI$Carte_EPCI %>%
+  ggplot() +
+  geom_sf(mapping = aes(fill = Groupe, colour = Groupe)) +
+  scale_fill_brewer(palette = "Paired", 
+                    aesthetics = c("fill", "colour"),
+                    guide = "none") +
+  theme_void()
+```
+
+Column
+------------------------------
+
+```{r}
+EPCI$Scores_EPCI %>% 
+  mutate_at(.vars = "candidat", .funs = str_to_title) %>% 
+  ggplot(mapping = aes(x = voix, y = candidat,
+                       fill = Groupe)) +
+  geom_bar(stat = "identity",
+           position = "dodge", orientation = "y") +
+  scale_fill_brewer(palette = "Paired", 
+                    aesthetics = c("fill", "colour"),
+                    guide = "none") +
+  scale_y_discrete(limits = rev) +
+  facet_wrap(facets = ~Tour, scales = "free_x") +
+  theme_minimal()
+```
+

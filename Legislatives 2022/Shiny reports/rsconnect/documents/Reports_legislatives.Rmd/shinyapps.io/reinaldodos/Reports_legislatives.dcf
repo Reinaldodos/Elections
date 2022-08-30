@@ -5,9 +5,9 @@ account: reinaldodos
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 6606355
-bundleId: 6078210
+bundleId: 6176246
 url: https://reinaldodos.shinyapps.io/Reports_legislatives/
-when: 1657200058.48196
-lastSyncTime: 1657200058.48199
+when: 1659866035.79078
+lastSyncTime: 1659866035.7908
 asMultiple: FALSE
 asStatic: FALSE

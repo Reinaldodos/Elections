@@ -1,3 +1,4 @@
+pacman::p_load(magrittr, tidyverse, rio, data.table)
 get_formula <- function(input_sankey) {
   noms = names(input_sankey)
   T1 = str_subset(string = noms, pattern = "_t1") %>% paste(collapse = ", ")

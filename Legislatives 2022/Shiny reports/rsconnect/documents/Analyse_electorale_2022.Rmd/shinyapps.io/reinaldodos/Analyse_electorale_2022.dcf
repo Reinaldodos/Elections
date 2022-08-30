@@ -1,0 +1,14 @@
+name: Analyse_electorale_2022
+title: Analyse_electorale_2022
+username:
+account: reinaldodos
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6749935
+bundleId: 6176254
+url: https://reinaldodos.shinyapps.io/Analyse_electorale_2022/
+when: 1659866494.49058
+lastSyncTime: 1659866494.4906
+asMultiple: TRUE
+asStatic: FALSE
+ignoredFiles: Reports_circo.rds|Reports_legislatives.Rmd

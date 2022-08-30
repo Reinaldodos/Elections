@@ -1,7 +1,5 @@
 ---
-title: "Report de voix aux législatives"
-author: "Reinaldo DOS SANTOS"
-date: '2022-07-07'
+title: "Analyse électorale 2022"
 output: flexdashboard::flex_dashboard
 runtime: shiny
 ---
@@ -16,7 +14,12 @@ library(rio)
 library(tidyverse)
 library(shiny)
 library(htmlwidgets)
+```
 
+Reports législatives (T1 sur T2)
+==============
+
+```{r}
 source(file = "sankey_fonctions.R")
 Reports = rio::import(file = "Reports_circo.rds")
 ```
@@ -60,5 +63,22 @@ renderSankeyNetwork({
     Get_Sankey()
 })
 
+```
+
+Column
+------------------------------
+
+### Matrice de report
+
+```{r}
+renderTable({
+  Reports %>%
+    filter(libelle_du_departement == input$dpt,
+           libelle_de_la_circonscription == input$circo) %>%
+    transmute(T1, T2,
+              report = scales::percent(report, accuracy = 0.1)) %>%
+    pivot_wider(names_from = T2,
+                values_from = report)
+})
 ```
 
