@@ -1,4 +1,3 @@
-
 FINAL %<>%
   select(insee,annee, candidat, score) %>%
   mutate_at(.vars = "candidat", .funs = str_to_title)

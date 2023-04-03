@@ -32,6 +32,7 @@ Circos_clust =
   rownames_to_column(var = "Circo") %>%
   inner_join(x = Circos)
 
+Circos_clust %>% split(x = .$Circo, f = .$Groupe)
 
 Sankey_clus =
   Circos_clust %>%
@@ -50,7 +51,7 @@ plan(strategy = multisession,
 Sankey_clus %<>%
   mutate(Sankey = future_map(
     .x = data,
-    .f = Get_safe_report, size = .5))
+    .f = Get_safe_report, size = .8))
 
 plan(strategy = sequential)
 
@@ -58,8 +59,7 @@ Sankey_clus %<>%
   mutate(Sankey_plot = map(.x = Sankey,
                            .f = Get_Sankey))
 
-Sankey_clus$Sankey_plot[[5]]
-Circos_clust %>% split(x = .$Circo, f = .$Groupe)
+Sankey_clus$Sankey_plot[[2]]
 
 TEST =
   Sankey_clus %>%

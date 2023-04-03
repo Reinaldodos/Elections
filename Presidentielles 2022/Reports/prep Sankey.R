@@ -1,5 +1,5 @@
-source(file = "Legislatives 2022/Fetch_data_bdv.R")
-source(file = "Legislatives 2022/Fetch_data_bdv_T2.R")
+source(file = "Presidentielles 2022/Fetch_data_bdv.R")
+source(file = "Presidentielles 2022/Fetch_data_bdv_T2.R")
 # Tripoter l'abstention (a bit) -------------------------------------------
 Electorat_stable =
   list(
@@ -59,5 +59,5 @@ input_Sankey %<>%
   mutate_at(.vars = vars(contains("_t")),
             .funs = as.integer)
 
-source(file = "Presidentielles 2022/sankey_fonctions.R")
+source(file = "Presidentielles 2022/Reports/sankey_fonctions.R")
 

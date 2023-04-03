@@ -43,6 +43,7 @@ Get_reports <- function(input) {
   return(Modele)
 }
 safe_Report = safely(Get_reports)
+
 Get_safe_report <- function(input, size) {
   RAPPORT = safe_Report(input = sample_frac(tbl = input, size = size))
   while (is_null(RAPPORT$result)) {
@@ -70,7 +71,7 @@ Get_Sankey <- function(links) {
     Target = "IDtarget",
     Value = "REPORT_voix",
     NodeID = "name",
-    sinksRight = FALSE)
+    sinksRight = FALSE, fontSize = 16)
   return(p)
 }
 
