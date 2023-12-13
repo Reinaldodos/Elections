@@ -11,19 +11,34 @@ Electorat_stable =
       summarise(Tot_T2 = sum(voix))
   ) %>% reduce(.f = inner_join)
 
-new_absT1 =
+DELTA =
   Electorat_stable %>%
-  filter(Tot_T1!=Tot_T2) %>%
-  mutate(DELTA = Tot_T2-Tot_T1) %>%
-  inner_join(x = output_T1) %>%
+  filter(Tot_T1 != Tot_T2) %>%
+  mutate(DELTA = Tot_T2 - Tot_T1) %>%
+  split(f = .$DELTA > 0)
+
+Abstentions_T2 =
+  output_T2 %>%
   filter(candidat == "abstentions") %>%
-  mutate(voix  = voix + DELTA) %>%
-  select(names(output_T1))
+  inner_join(y = DELTA$`FALSE`) %>%
+  mutate(voix = voix - DELTA)
+Abstentions_T1 =
+  output_T1 %>%
+  filter(candidat == "abstentions") %>%
+  inner_join(y = DELTA$`TRUE`) %>%
+  mutate(voix = voix + DELTA)
 
 output_T1 %<>%
-  anti_join(y = new_absT1,
+  anti_join(y = Abstentions_T1,
             by = c("rowid", "candidat")) %>%
-  bind_rows(new_absT1)
+  bind_rows(Abstentions_T1) %>%
+  select(names(output_T1))
+
+output_T2 %<>%
+  anti_join(y = Abstentions_T2,
+            by = c("rowid", "candidat")) %>%
+  bind_rows(Abstentions_T2) %>%
+  select(names(output_T2))
 
 Electorat_stable =
   list(
@@ -40,9 +55,8 @@ Electorat_stable =
 # Inférence écologique ----------------------------------------------------
 pacman::p_load(eiPack)
 input =
-  list(
-    "T1" = output_T1,
-    "T2" = output_T2) %>%
+  list("T1" = output_T1,
+       "T2" = output_T2) %>%
   bind_rows(.id = "Tour")
 
 input_Sankey =
@@ -59,5 +73,12 @@ input_Sankey %<>%
   mutate_at(.vars = vars(contains("_t")),
             .funs = as.integer)
 
-source(file = "Presidentielles 2022/Reports/sankey_fonctions.R")
+input_Sankey %<>%
+  gather(key = Liste, value = Score,-rowid) %>%
+  group_by(rowid) %>%
+  summarise(N = sum(Score)) %>%
+  inner_join(x = Bureaux, by = "rowid") %>%
+  filter(N > 0) %>%
+  semi_join(x = input_Sankey, by = "rowid")
 
+source(file = "Presidentielles 2022/Reports/sankey_fonctions.R")

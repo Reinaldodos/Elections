@@ -9,6 +9,7 @@ Gauche = c(
 Proportionnelle =
   Scores %>%
   mutate(candidat = str_c(candidat, "_T1")) %>%
+  distinct(candidat)
   filter(candidat %in% Gauche) %>%
   group_by(candidat) %>%
   summarise(voix = sum(voix)) %>%

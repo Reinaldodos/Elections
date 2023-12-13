@@ -34,8 +34,8 @@ Get_reports <- function(input) {
     ) %>%
     reduce(.f = inner_join, by = c("T1", "T2"))
 
-  Modele[Modele$report > 1,]$report = 1
-  Modele[Modele$report < 0, ]$report = 0
+  # Modele[Modele$report > 1,]$report = 1
+  # Modele[Modele$report < 0, ]$report = 0
 
   Modele =
     input %>%
