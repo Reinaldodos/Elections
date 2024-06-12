@@ -97,14 +97,33 @@ Get_Sankey <- function(data) {
   links$IDtarget <- match(links$target, nodes$name) - 1
 
   # Make the Network
-  p <- sankeyNetwork(
+  sankey <- sankeyNetwork(
     Links = links,
     Nodes = nodes,
     Source = "IDsource",
     Target = "IDtarget",
     Value = "REPORT",
     NodeID = "name",
-    sinksRight = FALSE, units = "voix"
+    sinksRight = FALSE,
+    units = "voix"
   )
-  return(p)
+
+  # sankey <- htmlwidgets::prependContent(sankey, htmltools::tags$h1("Title"))
+  sankey <-
+    htmlwidgets::appendContent(sankey,
+                               htmltools::tags$p("github.com/Reinaldodos"))
+
+  return(sankey)
+}
+
+
+get_web_report <- function(departement, circo, sankey) {
+  fichier = sprintf("Europeennes 2024/Reports/%s_%s.html",
+                    departement,
+                    circo)
+
+  if (!is_null(sankey))
+
+    htmltools::save_html(file = fichier,
+                         html = sankey)
 }
