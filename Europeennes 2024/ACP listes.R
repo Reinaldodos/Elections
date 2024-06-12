@@ -5,6 +5,9 @@ MAT =
   janitor::clean_names() %>%
   column_to_rownames(var = "commune")
 
+MAT =
+  "Europeennes 2024/Matrice circo EURO T1 T2.rds" %>%
+  read_rds()
 
 hc =
   MAT %>%
@@ -86,11 +89,11 @@ outpt %>%
   select(-voix) %>%
   # spread(Groupe, Score) %>%
   ggplot(mapping = aes(y = candidat, x = Score,
-                       fill = scrutin))+
+                       fill = scrutin)) +
   geom_bar(stat = "identity", position = "dodge")+
   facet_wrap(facets = ~ Groupe)
 
-Frances$`6` %>%
+Frances$`5` %>%
   enframe(value = "circo") %>%
   tidyr::extract(col = circo,
                   into = c("libelle_circo", "departement"),
