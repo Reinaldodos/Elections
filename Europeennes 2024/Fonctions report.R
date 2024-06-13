@@ -66,8 +66,27 @@ append_report <- function(data, coefficients) {
     return()
 }
 
+filter_mismatch <- function(data) {
+  mismatch =
+    data %>%
+    group_by(code_de_la_commune, code_du_b_vote, scrutin) %>%
+    summarise(inscrits = sum(voix), .groups = "drop") %>%
+    spread(key = scrutin, value = inscrits, fill = 0) %>%
+    filter(EURO != PDT)
+
+  if (nrow(mismatch) > 0) {
+    data =
+      mismatch %>%
+      anti_join(x = data,
+                by = join_by(code_de_la_commune, code_du_b_vote))
+  }
+
+  return(data)
+}
+
 chaine_report <- function(data) {
   data %>%
+    filter_mismatch() %>%
     pivot_sankey() %>%
     get_reg_ecolo() %>%
     extract_coefficients() %>%
