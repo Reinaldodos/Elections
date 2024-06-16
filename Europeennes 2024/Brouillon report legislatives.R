@@ -165,7 +165,13 @@ list(
     asTable = TRUE,
     file = "Europeennes 2024/Reports NUPES.xlsx")
 
-  NUPES %>%
+output_nest   %>%
+  select(starts_with("code"),
+         safe_reports) %>%
+  unnest(cols = c(safe_reports)) %>%
+  filter(source == "lgs_abstentions") %>%
+    semi_join(y = Nego_abst,
+              by = join_by(target)) %>%
     ggplot(mapping = aes(y = paste(source, target,
                                    sep = " vers "),
                          x = report)) +
