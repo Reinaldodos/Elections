@@ -91,20 +91,23 @@ get_plot_groupes <- function(data_score) {
   PLOTT =
     data_score %>%
     filter(score > .05) %>%
-    semi_join(x = data_score,
-              by = join_by(scrutin, tour, candidat)) %>%
+    semi_join(x = data_score, by = join_by(scrutin, tour, candidat)) %>%
     ggplot(mapping = aes(
       fill = as_factor(Groupe),
       x = score,
       y = candidat
     )) +
-    labs(title = "Score des listes selon les clusters",
-         subtitle = "en fonction des scrutins",
-         fill = "Cluster",
-         x = "Score (en % des inscrits)")+
+    labs(
+      title = "Score des listes selon les clusters",
+      subtitle = "en fonction des scrutins",
+      fill = "Cluster",
+      y = "Liste ou candidat",
+      x = "Score (en % des inscrits)"
+    ) +
     geom_bar(stat = "identity", position = "dodge") +
     theme(legend.position = "bottom") +
-    scale_y_discrete(limits = rev) +
+    scale_y_discrete(limits = rev,
+                     labels = scales::label_wrap(width = 35)) +
     scale_fill_viridis_d(option = "H") +
     facet_wrap(facets = ~ scrutin + tour, scales = "free")
 
