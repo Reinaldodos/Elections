@@ -46,20 +46,24 @@ get_clusters <- function(hc_KOR, Nb_clusters) {
   return(Groupes)
 }
 
-clusters_to_JSON <- function(Groupes, input_circo, path, ...) {
+get_clusters_libelles <- function(Groupes, input_circo) {
   Groupes %>%
     tidyr::separate(
       col = bureau,
       into = c("code_de_la_commune", "code_du_b_vote"),
       sep = "_"
     ) %>%
-    inner_join(x = input_circo %>%
-                 distinct(code_de_la_commune, libelle_de_la_commune, code_du_b_vote),
-               by = join_by(code_de_la_commune, code_du_b_vote)) %>%
-    group_nest(Groupe, code_de_la_commune, libelle_de_la_commune,
-               .key = "bureaux") %>%
-    group_nest(Groupe,
-               .key = "commune") %>%
+    inner_join(
+      x = input_circo %>%
+        distinct(code_de_la_commune, libelle_de_la_commune, code_du_b_vote),
+      by = join_by(code_de_la_commune, code_du_b_vote)
+    )
+}
+
+clusters_to_JSON <- function(data, path, ...) {
+  data %>%
+    group_nest(Groupe, code_de_la_commune, libelle_de_la_commune, .key = "bureaux") %>%
+    group_nest(Groupe, .key = "commune") %>%
     jsonlite::write_json(path = path, ..., pretty = TRUE)
 }
 

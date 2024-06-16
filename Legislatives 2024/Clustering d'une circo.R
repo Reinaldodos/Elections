@@ -42,9 +42,9 @@ Groupes =
   hc_KOR %>%
   get_clusters(Nb_clusters = 4)
 
-clusters_to_JSON(Groupes = Groupes,
-                 input_circo = input_circo,
-                 path = "Legislatives 2024/clusters 5904.json")
+get_clusters_libelles(Groupes = Groupes,
+                      input_circo = input_circo) %>%
+  clusters_to_JSON(path = "Legislatives 2024/clusters 5904.json")
 
 # Scoring des clusters ----------------------------------------------------
 
