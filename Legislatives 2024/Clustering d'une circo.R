@@ -22,6 +22,10 @@ hc_KOR =
   data %>%
   get_CAH()
 
+hc_KOR %>%
+  ggdendro::ggdendrogram(rotate = T) %>%
+  print()
+
 # Clustering --------------------------------------------------------------
 
 Groupes =

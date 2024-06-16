@@ -45,18 +45,10 @@ get_CAH <- function(data) {
     scale %>%
     cor(use = "pairwise.complete.obs")
 
-  pacman::p_load(ggcorrplot)
-  KOR %>%
-    ggcorrplot::ggcorrplot(hc.order = T)
-
   hc_KOR =
     KOR %>%
     dist() %>%
     hclust(method = "ward.D")
-
-  hc_KOR %>%
-    ggdendro::ggdendrogram(rotate = T) %>%
-    print()
 
   return(hc_KOR)
 }
