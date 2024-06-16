@@ -54,9 +54,12 @@ clusters_to_JSON <- function(Groupes, input_circo, path, ...) {
       sep = "_"
     ) %>%
     inner_join(x = input_circo %>%
-                 distinct(code_de_la_commune, libelle_de_la_commune, code_du_b_vote)) %>%
-    group_nest(Groupe, code_de_la_commune, libelle_de_la_commune, .key = "bureaux") %>%
-    group_nest(Groupe, .key = "commune") %>%
+                 distinct(code_de_la_commune, libelle_de_la_commune, code_du_b_vote),
+               by = join_by(code_de_la_commune, code_du_b_vote)) %>%
+    group_nest(Groupe, code_de_la_commune, libelle_de_la_commune,
+               .key = "bureaux") %>%
+    group_nest(Groupe,
+               .key = "commune") %>%
     jsonlite::write_json(path = path, ..., pretty = TRUE)
 }
 
