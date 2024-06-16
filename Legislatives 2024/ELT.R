@@ -30,7 +30,8 @@ Donnees$EURO =
   inner_join(
     x = Donnees$EURO,
     by = join_by(code_du_departement, code_de_la_commune, code_du_b_vote)
-  )
+  ) %>%
+  mutate(Tour = "T1")
 
 input =
   Donnees %>%
