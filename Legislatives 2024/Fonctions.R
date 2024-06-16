@@ -75,6 +75,8 @@ get_clusters_libelles <- function(Groupes, input_circo) {
 
   output =
     Groupes %>%
+    mutate(Cluster = as_factor(Groupe)) %>%
+    select(-Groupe) %>%
     tidyr::separate(
       col = bureau,
       into = c("code_de_la_commune", "code_du_b_vote"),
