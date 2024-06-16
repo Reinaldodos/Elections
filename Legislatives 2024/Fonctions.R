@@ -1,5 +1,34 @@
 
+
 require(tidyverse)
+
+get_data_circo <- function(input, circo) {
+  input_circo =
+    input %>%
+    distinct(code_du_departement, code_de_la_circonscription) %>%
+    collect() %>%
+    filter(
+      code_du_departement == str_sub(string = circo, end = 2),
+      code_de_la_circonscription == str_sub(string = circo, start = 3)
+    ) %>%
+    semi_join(x = input,
+              by = join_by(code_du_departement, code_de_la_circonscription))
+
+  return(input_circo)
+}
+
+unite_data <- function(input_circo) {
+  data =
+    input_circo %>%
+    collect() %>%
+    tidyr::unite(col = bulletin, scrutin, Tour, candidat) %>%
+    tidyr::unite(col = bureau, code_de_la_commune, code_du_b_vote) %>%
+    group_by(bulletin, bureau) %>%
+    summarise(voix = sum(voix, na.rm = TRUE), .groups = "drop")
+
+  return(data)
+}
+
 
 get_CAH <- function(data) {
   MAT =
@@ -7,7 +36,8 @@ get_CAH <- function(data) {
     pivot_wider(
       names_from = bureau,
       values_from = voix,
-      values_fill = 0) %>%
+      values_fill = 0
+    ) %>%
     column_to_rownames(var = "bulletin")
 
   KOR =
@@ -47,17 +77,22 @@ get_clusters <- function(hc_KOR, Nb_clusters) {
 }
 
 get_clusters_libelles <- function(Groupes, input_circo) {
-  Groupes %>%
+  Bureaux =
+    input_circo %>%
+    distinct(code_de_la_commune, libelle_de_la_commune, code_du_b_vote)
+
+  output =
+    Groupes %>%
     tidyr::separate(
       col = bureau,
       into = c("code_de_la_commune", "code_du_b_vote"),
       sep = "_"
     ) %>%
-    inner_join(
-      x = input_circo %>%
-        distinct(code_de_la_commune, libelle_de_la_commune, code_du_b_vote),
-      by = join_by(code_de_la_commune, code_du_b_vote)
-    )
+    inner_join(x = Bureaux,
+               by = join_by(code_de_la_commune, code_du_b_vote)) %>%
+    collect()
+
+  return(output)
 }
 
 clusters_to_JSON <- function(data, path, ...) {
