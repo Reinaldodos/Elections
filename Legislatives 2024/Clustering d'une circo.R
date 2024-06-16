@@ -6,7 +6,9 @@ source(file = "Legislatives 2024/Fonctions.R",
 # ELT données -------------------------------------------------------------
 
 Donnees =
-  list(PDT = "Presidentielles 2022/resultats.rds", LGS = "Legislatives 2022/resultats_raw.rds", EURO = "Europeennes 2024/output/resultats.rds") %>%
+  list(PDT = "Presidentielles 2022/resultats.rds",
+       LGS = "Legislatives 2022/resultats_raw.rds",
+       EURO = "Europeennes 2024/output/resultats.rds") %>%
   map(.f = read_rds)
 
 Communes_circo =
@@ -39,7 +41,7 @@ input =
 
 # choix de la circo -------------------------------------------------------
 
-circo = "4101"
+circo = "5904"
 
 input_circo =
   input %>%
@@ -62,7 +64,6 @@ hc_KOR =
   data %>%
   get_CAH()
 
-
 # Clustering --------------------------------------------------------------
 
 Groupes =
@@ -72,8 +73,7 @@ Groupes =
 
 clusters_to_JSON(Groupes = Groupes,
                  input_circo = input_circo,
-                 path = "Legislatives 2024/clusters 4101.json")
-
+                 path = "Legislatives 2024/clusters 5904.json")
 
 # Scoring des clusters ----------------------------------------------------
 

@@ -4,9 +4,10 @@ require(tidyverse)
 get_CAH <- function(data) {
   MAT =
     data %>%
-    spread(key = bureau,
-           value = voix,
-           fill = 0) %>%
+    pivot_wider(
+      names_from = bureau,
+      values_from = voix,
+      values_fill = 0) %>%
     column_to_rownames(var = "bulletin")
 
   KOR =
@@ -16,7 +17,7 @@ get_CAH <- function(data) {
 
   pacman::p_load(ggcorrplot)
   KOR %>%
-    ggcorrplot(hc.order = T)
+    ggcorrplot::ggcorrplot(hc.order = T)
 
   hc_KOR =
     KOR %>%
@@ -38,9 +39,9 @@ get_clusters <- function(hc_KOR, Nb_clusters) {
 
   Groupes =
     hc_KOR %>%
-    cutree(k = Nb_clusters) %>%
+    dendextend::cutree(k = Nb_clusters) %>%
     data.table::as.data.table(keep.rownames = T) %>%
-    rename(bureau = "rn", Groupe = ".")
+    dplyr::rename(bureau = "rn", Groupe = ".")
 
   return(Groupes)
 }
