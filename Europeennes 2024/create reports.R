@@ -1,6 +1,6 @@
 require(tidyverse)
 
-source("~/Documents/Elections/Europeennes 2024/Fonctions report.R")
+source("Europeennes 2024/Fonctions report.R")
 
 Presidentielles =
   "Presidentielles 2022/resultats.rds" %>%
