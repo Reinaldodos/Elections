@@ -1,13 +1,35 @@
-MAT =
-  input %>%
-  distinct(Commune, `Liste des candidatures par suffrages exprimés`, Score) %>%
-  spread(`Liste des candidatures par suffrages exprimés`, Score) %>%
-  janitor::clean_names() %>%
-  column_to_rownames(var = "commune")
+
+source(file = "Legislatives 2024/Fonctions.R",
+       encoding = "UTF-8")
+
+# choix de la circo -------------------------------------------------------
+
+Donnees =
+  "Legislatives 2024/data/donnees.parquet" %>%
+  arrow::open_dataset() %>%
+  collect()
+
+input =
+  Donnees %>%
+  tidyr::unite(col = bulletin, scrutin, Tour, candidat) %>%
+  tidyr::unite(col = bureau, code_de_la_commune, code_du_b_vote) %>%
+  tidyr::unite(col = circo, code_du_departement, code_de_la_circonscription) %>%
+  group_by(circo, bureau, bulletin) %>%
+  summarise(voix = sum(voix, na.rm = TRUE), .groups = "drop")
 
 MAT =
-  "Europeennes 2024/Matrice circo EURO T1 T2.rds" %>%
-  read_rds()
+  input %>%
+  filter(bulletin %>%
+           str_detect(pattern = "LGS_",
+                      negate = TRUE)) %>%
+  tidyr::unite(col = bureau, circo, bureau) %>%
+  pivot_wider(
+    names_from = bulletin,
+    values_from = voix,
+    values_fill = 0
+  ) %>%
+  column_to_rownames(var = "bureau") %>%
+  janitor::clean_names()
 
 hc =
   MAT %>%
@@ -16,26 +38,27 @@ hc =
   dist() %>%
   hclust(method = "ward.D")
 
-pacman::p_load(ggdendro)
 hc %>%
-  ggdendrogram(rotate = T) %>%
+  ggdendro::ggdendrogram(rotate = T) %>%
   print()
 
-pacman::p_load(dendextend)
+Groupes =
+  hc %>%
+  get_clusters(Nb_clusters = 4)
 
-hc %>%
-  as.dendrogram() %>%
-  set("branches_k_color", k = 6) %>%
-  plot_horiz.dendrogram()
+Groupes %>%
+  split(x = .$bureau, f = .$Groupe)
+
+Vraies_listes =
+  Groupes %>%
+  filter(Groupe != 2) %>%
+  pull(bureau)
 
 KOR =
   MAT %>%
+  select(all_of(Vraies_listes)) %>%
   scale %>%
   cor(use = "pairwise.complete.obs")
-
-pacman::p_load(ggcorrplot)
-KOR %>%
-  ggcorrplot(hc.order = T)
 
 hc_KOR =
   KOR %>%
@@ -43,60 +66,67 @@ hc_KOR =
   hclust(method = "ward.D")
 
 hc_KOR %>%
-  ggdendrogram(rotate = T) %>%
+  ggdendro::ggdendrogram(rotate = T) %>%
   print()
 
-pacman::p_load(psych, GPArotation)
+hc_KOR %>%
+  as.dendrogram() %>%
+  dendextend::set("branches_k_color",
+                  k = 7) %>%
+  dendextend::plot_horiz.dendrogram()
 
-fa.parallel(x = KOR,
-            n.obs = nrow(MAT),
-            fa = "pc")
-
-Groupes =
-  hc %>%
-  cutree(k = 6) %>%
-  data.table::as.data.table(keep.rownames = T) %>%
-  rename(Listes = "rn", Groupe = ".")
-
+hc_KOR %>%
+  get_clusters(Nb_clusters = 6) %>%
+  split(x = .$bureau, f = .$Groupe)
 
 Frances =
-  Groupes %>%
-  split(x = .$Listes, f = .$Groupe)
+  hc_KOR %>%
+  get_clusters(Nb_clusters = 6) %>%
+  mutate(
+    France = case_match(
+      .x = Groupe,
+      1 ~ "Les bouseux",
+      2 ~ "Les centristes",
+      3 ~ "Les réacs",
+      4 ~ "Les méluches",
+      5 ~ "Les fachos",
+      6 ~ "Les dépités"
+    )
+  )
 
-outpt =
+output =
   MAT %>%
-  rownames_to_column(var = "bulletin") %>%
-  pivot_longer(
-    cols = -bulletin,
-    names_to = "circo",
-    values_to = "voix",
-    values_drop_na = TRUE
-  ) %>%
-  tidyr::separate(col = bulletin,
-                  into = c("candidat", "scrutin"),
-                  sep = "_") %>%
-  left_join(y = Groupes,
-            by = join_by(circo == Listes)) %>%
-  group_by(scrutin, Groupe, candidat) %>%
-  summarise(voix = sum(voix, na.rm = TRUE)) %>%
-  mutate(Score = voix/sum(voix)) %>%
-  ungroup()
+  rownames_to_column(var = "bureau") %>%
+  pivot_longer(cols = -bureau,
+               names_to = "bulletin",
+               values_to = "voix") %>%
+  filter(voix > 0) %>%
+  inner_join(y = Frances,
+             by = join_by(bulletin == bureau)) %>%
+  tidyr::extract(col = bulletin, into = c("scrutin", "tour", "candidat"),
+                 regex = "(.*)_(t[12])_(.*)") %>%
+  group_by(scrutin, tour, bureau, France) %>%
+  summarise(voix = sum(voix, na.rm = TRUE),
+            .groups = "drop")
 
-outpt %>%
-  filter(Score > 5/100) %>%
-  semi_join(x = outpt,
-            by = join_by(candidat, scrutin)) %>%
+output %>%
+  group_by(scrutin, tour, France) %>%
+  summarise(voix = sum(voix, na.rm = TRUE),
+            .groups = "drop_last") %>%
+  mutate(score = (voix/sum(voix)) %>%
+           scales::percent(accuracy = 0.1)) %>%
+  ungroup() %>%
   select(-voix) %>%
-  # spread(Groupe, Score) %>%
-  ggplot(mapping = aes(y = candidat, x = Score,
-                       fill = scrutin)) +
-  geom_bar(stat = "identity", position = "dodge")+
-  facet_wrap(facets = ~ Groupe)
+  tidyr::unite(col = election, scrutin, tour, sep = "_") %>%
+  spread(election, score)
 
-Frances$`5` %>%
-  enframe(value = "circo") %>%
-  tidyr::extract(col = circo,
-                  into = c("libelle_circo", "departement"),
-                  regex = "x(.*circonscription)_de_(.*)",
-                  remove = FALSE) %>%
+output %>%
+  tidyr::unite(col = election, scrutin, tour, sep = "_") %>%
+  spread(key = election,
+         value = voix) %>%
+  group_by(bureau) %>%
+  mutate(across(.cols = where(is.numeric),
+                .fns = function(x) x/sum(x, na.rm = TRUE)
+                )
+         ) %>%
   view()
