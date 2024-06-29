@@ -2,5 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-Europeennes 2019/Carto/Communes/
-Presidentielles 2022/data/
+*.csv
+*.parquet
+*.arrow

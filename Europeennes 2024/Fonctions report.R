@@ -2,29 +2,33 @@ pivot_sankey <- function(input_test) {
   input_sankey =
     input_test %>%
     tidyr::unite(col = bulletin, scrutin, candidat) %>%
-    pivot_wider(names_from = bulletin,
-                values_from = voix,
-                values_fill = 0) %>%
+    pivot_wider(
+      names_from = bulletin,
+      values_from = voix,
+      values_fill = 0
+    ) %>%
     janitor::clean_names()
   return(input_sankey)
 }
 
 get_formula <- function(data) {
   noms = names(data)
-  EURO = str_subset(string = noms, pattern = "^euro") %>% paste(collapse = ", ")
-  PDT = str_subset(string = noms, pattern = "^pdt") %>% paste(collapse = ", ")
-  FORMULE = str_c("cbind(",
-                  EURO,
-                  ") ~ cbind(",
-                  PDT,  ")") %>% as.formula()
+
+  SOURCE = str_subset(string = noms, pattern = "^euro") %>%
+    paste(collapse = ", ")
+
+  TARGET = str_subset(string = noms, pattern = "^pdt") %>%
+    paste(collapse = ", ")
+
+  FORMULE = str_c("cbind(", SOURCE, ") ~ cbind(", TARGET, ")") %>%
+    as.formula()
 
   return(FORMULE)
 }
 
 get_reg_ecolo <- function(data) {
   out.reg =
-    eiPack::ei.reg(formula = get_formula(data),
-                   data = data)
+    eiPack::ei.reg(formula = get_formula(data), data = data)
 
   return(out.reg)
 }
@@ -60,8 +64,7 @@ append_report <- function(data, coefficients) {
     summarise(voix = sum(voix), .groups = "drop") %>%
     tidyr::unite(col = bulletin, scrutin, candidat) %>%
     mutate(bulletin = janitor::make_clean_names(bulletin)) %>%
-    inner_join(x = coefficients,
-               by = join_by(source == bulletin)) %>%
+    inner_join(x = coefficients, by = join_by(source == bulletin)) %>%
     mutate(REPORT = report * voix) %>%
     return()
 }
@@ -71,7 +74,9 @@ filter_mismatch <- function(data) {
     data %>%
     group_by(code_de_la_commune, code_du_b_vote, scrutin) %>%
     summarise(inscrits = sum(voix), .groups = "drop") %>%
-    spread(key = scrutin, value = inscrits, fill = 0) %>%
+    spread(key = scrutin,
+           value = inscrits,
+           fill = 0) %>%
     filter(EURO != PDT)
 
   if (nrow(mismatch) > 0) {
@@ -97,8 +102,9 @@ chaine_report <- function(data) {
 Get_Sankey <- function(data) {
   require(networkD3)
 
-  if(is_null(data)){
-    return()}
+  if (is_null(data)) {
+    return()
+  }
 
   links =
     data %>%
@@ -107,8 +113,7 @@ Get_Sankey <- function(data) {
   # A connection data frame is a list of flows with intensity for each flow
   # From these flows we need to create a node data frame: it lists every entities involved in the flow
   nodes <-
-    data.frame(name = c(as.character(links$source),
-                        as.character(links$target)) %>%
+    data.frame(name = c(as.character(links$source), as.character(links$target)) %>%
                  unique())
 
   # With networkD3, connection must be provided using id, not using real name like in the links dataframe.. So we need to reformat it.
@@ -129,20 +134,16 @@ Get_Sankey <- function(data) {
 
   # sankey <- htmlwidgets::prependContent(sankey, htmltools::tags$h1("Title"))
   sankey <-
-    htmlwidgets::appendContent(sankey,
-                               htmltools::tags$p("github.com/Reinaldodos"))
+    htmlwidgets::appendContent(sankey, htmltools::tags$p("github.com/Reinaldodos"))
 
   return(sankey)
 }
 
 
 get_web_report <- function(departement, circo, sankey) {
-  fichier = sprintf("Europeennes 2024/Reports/%s_%s.html",
-                    departement,
-                    circo)
+  fichier = sprintf("Europeennes 2024/Reports/%s_%s.html", departement, circo)
 
   if (!is_null(sankey))
 
-    htmltools::save_html(file = fichier,
-                         html = sankey)
+    htmltools::save_html(file = fichier, html = sankey)
 }
