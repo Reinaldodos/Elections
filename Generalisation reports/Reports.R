@@ -27,7 +27,6 @@ Reports =
   filter(date_1 < date_5) %>%
   select(source = election_2, target = election_6)
 
-
 process_reports <- function(source) {
   data_source_name <- paste0("data_", source)
 
@@ -58,6 +57,9 @@ input =
   ) %>%
   distinct()
 
+input %>%
+  count(source, target)
+
 Stock =
   "Generalisation reports/Stock/" %>%
   arrow::open_dataset(
@@ -66,8 +68,9 @@ Stock =
       scrutin_source = arrow::string(),
       scrutin_target = arrow::string(),
       code_du_departement = arrow::string(),
-      code_de_la_circonscription = arrow::string())
+      code_de_la_circonscription = arrow::string()
     )
+  )
 
 input =
   Stock %>%
@@ -76,9 +79,20 @@ input =
            code_du_departement,
            code_de_la_circonscription) %>%
   collect() %>%
-  anti_join(x = input)
+  anti_join(
+    x = input,
+    by = join_by(
+      code_du_departement,
+      code_de_la_circonscription,
+      source == scrutin_source,
+      target == scrutin_target
+    )
+  )
 
-while(nrow(input) > 0) {
+input %>%
+  count(source, target)
+
+while (nrow(input) > 0) {
   output =
     input %>%
     sample_n(min(50, nrow(input))) %>%
@@ -122,7 +136,8 @@ while(nrow(input) > 0) {
         "code_de_la_circonscription",
         "scrutin_source",
         "scrutin_target"
-      )
+      ),
+      existing_data_behavior = "delete_matching"
     )
 
   input =
@@ -138,6 +153,9 @@ while(nrow(input) > 0) {
     )
 }
 
+
+
+
 Reports =
   "Generalisation reports/Stock/" %>%
   arrow::open_dataset(format = "arrow") %>%
@@ -147,16 +165,50 @@ Reports =
            code_du_departement,
            code_de_la_circonscription) %>%
   filter(100 * REPORT > sum(REPORT)) %>%
-  ungroup()
+  ungroup() %>%
+  mutate(code_de_la_circonscription =
+           code_de_la_circonscription %>%
+           sprintf(fmt = "%02d"))
+
+SANKEY_lgs_ant <- function(FROM) {
+  "Generalisation reports/Stock/" %>%
+    arrow::open_dataset(format = "arrow") %>%
+    collect()  %>%
+    filter(scrutin_target %>%
+             str_detect(pattern = "lgs_ant")) %>%
+    summarise(
+      REPORT = sum(REPORT, na.rm = TRUE) %>%
+        round(),
+      .by = c(scrutin_source, source, target)
+    ) %>%
+    filter(scrutin_source == FROM) %>%
+    filter(100 * REPORT > sum(REPORT)) %>%
+    Get_Sankey()
+}
+
+SANKEY_lgs_ant(FROM = "pdt_t1") %>%
+  htmltools::save_html(file = "~/Téléchargements/reports pdt sur lgs_ant.html")
 
 Reports %>%
-  filter(source %>%
-           str_detect(pattern = "melenchon")) %>%
-  ggplot(mapping = aes(x = report,
-                       y = target)) +
-  geom_boxplot(outliers = FALSE) +
-  facet_wrap(facets = ~ scrutin_source + scrutin_target,
-             scales = "free_y") +
-  lims(x = c(0,1))+
-  theme(legend.position = "bottom")
+  mutate(code_de_la_circonscription =
+           code_de_la_circonscription %>%
+           sprintf(fmt = "%02d")) %>%
+  filter(scrutin_target %>%
+           str_detect(pattern = "lgs_ant"),
+         scrutin_source == "lgs_t1") %>%
+  split(f = str_c(.$code_du_departement, .$code_de_la_circonscription)) %>%
+  openxlsx::write.xlsx(asTable = TRUE,
+                       file = "Legislatives 2024/reports lgs par circo.xlsx")
+
+Reports %>%
+  mutate(code_de_la_circonscription =
+           code_de_la_circonscription %>%
+           sprintf(fmt = "%02d")) %>%
+  filter(scrutin_target %>%
+           str_detect(pattern = "lgs_ant"),
+         scrutin_source == "pdt_t1") %>%
+  split(f = str_c(.$code_du_departement, .$code_de_la_circonscription)) %>%
+  openxlsx::write.xlsx(asTable = TRUE,
+                       file = "Legislatives 2024/reports pdt par circo.xlsx")
+
 
