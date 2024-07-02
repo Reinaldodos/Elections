@@ -23,6 +23,10 @@ input$voix =
   str_remove_all(pattern = "[^[0-9]]") %>%
   as.numeric()
 
+input %>%
+  group_nest(Departement, circo, url) %>%
+  jsonlite::write_json(path = "Legislatives 2024/Soirée électorale/bilan.json")
+
 Circos =
   BASE %>%
   select(Departement, circo) %>%
