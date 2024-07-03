@@ -164,3 +164,30 @@ Get_Sankey <- function(data) {
   return(sankey)
 }
 
+process_reports <- function(source) {
+  data_source_name <- paste0("data_", source)
+
+  Reports %>%
+    select({{ source }}) %>%
+    inner_join(y = Scrutins, by = join_by({{ source }} == election)) %>%
+    left_join(
+      y = Donnees,
+      by = join_by(date, scrutin, Tour),
+      relationship = "many-to-many"
+    ) %>%
+    select(-scrutin, -Tour, -date, -annee) %>%
+    rename(!!data_source_name := data)
+}
+
+SANKEY_natio <- function(data, FROM, TO) {
+  data  %>%
+    filter(scrutin_target == TO,
+           scrutin_source == FROM) %>%
+    summarise(
+      REPORT = sum(REPORT, na.rm = TRUE) %>%
+        round(),
+      .by = c(scrutin_source, source, target)
+    ) %>%
+    filter(100 * REPORT > sum(REPORT)) %>%
+    Get_Sankey()
+}

@@ -6,8 +6,6 @@ input =
   janitor::clean_names() %>%
   rowid_to_column(var = "rowid")
 
-input %>% names()
-
 Bureaux =
   input %>%
   distinct(rowid,
@@ -90,6 +88,3 @@ Resultats =
 Resultats %>%
   select(-rowid) %>%
   saveRDS(file = "Legislatives 2024/resultats bdv T1.rds")
-
-
-
