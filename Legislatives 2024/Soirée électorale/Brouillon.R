@@ -52,22 +52,7 @@ Triangulaires_situ =
   summarise(situ = paste(nuance, collapse = " -> "),
             .groups = "drop")
 
-Etiquettes =
-  "Legislatives 2024/tableau-final-accord-frontpopulaire-leg2024-1.xlsx" %>%
-  readxl::read_excel() %>%
-  janitor::clean_names() %>%
-  transmute(circo = circo %>%
-              str_remove_all(pattern = "-"), etiquette)
 
-Resultats =
-  input %>%
-  summarise(across(.cols = starts_with("percent"), .fns = sum),
-            .by = c(circo, nuance)) %>%
-  tidyr::separate(col = circo,
-                  into = c("circo", "libelle_circo"),
-                  sep = " - ") %>%
-  inner_join(x = Etiquettes,
-             by = join_by(circo))
 
 Triangulaires_RN %>%
   select(circo) %>%
@@ -87,4 +72,5 @@ Triangulaires_RN %>%
                   sep = " - ") %>%
   inner_join(x = Etiquettes) %>%
   view()
+
 
