@@ -8,10 +8,10 @@ while (nrow(input) > 0) {
   input =
     "Legislatives 2024/Soirée électorale/Stock/" %>%
     arrow::open_dataset(format = "arrow") %>%
-    filter(elu_e == "OUI") %>%
+    filter(elu_e != "NON") %>%
     anti_join(x = input,
               copy = TRUE,
-              by = join_by(Departement, circo))
+              by = join_by(Departement, circo, url))
 
   Resultats =
     input %>%
@@ -24,7 +24,7 @@ while (nrow(input) > 0) {
 
   Resultats %>%
     mutate(resultats = data %>%
-             map(.f = ~ .$result)) %>%
+             map(.f = ~ .$result$Resultats)) %>%
     select(Departement, circo, url, resultats) %>%
     unnest(cols = c(resultats)) %>%
     arrow::write_dataset(

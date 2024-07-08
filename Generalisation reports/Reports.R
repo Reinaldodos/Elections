@@ -1,4 +1,5 @@
-source(file = "Generalisation reports/Fonctions.R", encoding = "UTF-8")
+source(file = "Generalisation reports/Fonctions.R",
+       encoding = "UTF-8")
 
 
 Donnees =
@@ -17,11 +18,14 @@ Scrutins =
   Donnees %>%
   distinct(date, scrutin, Tour) %>%
   collect() %>%
-  tidyr::unite(col = election, scrutin, Tour, remove = FALSE) %>%
-  mutate(across(.cols = election, .fns = janitor::make_clean_names))
+  tidyr::unite(col = election, scrutin, Tour,
+               remove = FALSE) %>%
+  mutate(across(.cols = election,
+                .fns = janitor::make_clean_names))
 
 Reports =
-  tidyr::crossing(Scrutins, Scrutins, .name_repair = "unique") %>%
+  tidyr::crossing(Scrutins, Scrutins,
+                  .name_repair = "unique") %>%
   janitor::clean_names() %>%
   filter(date_1 < date_5) %>%
   select(source = election_2, target = election_6)
@@ -82,7 +86,8 @@ while (nrow(input) > 0) {
     sample_n(min(50, nrow(input))) %>%
     mutate(output = pmap(
       .f = redresser_donnees,
-      .l = list(data_source = data_source, data_target = data_target),
+      .l = list(data_source = data_source,
+                data_target = data_target),
       .progress = TRUE
     )) %>%
     mutate(regression = output %>%
@@ -146,20 +151,27 @@ Reports =
            sprintf(fmt = "%02d"))
 
 Reports %>%
-  SANKEY_natio(FROM = "euro_t1", TO = "lgs_ant_t1")
+  filter(code_du_departement == "33",
+         code_de_la_circonscription == "02") %>%
+  SANKEY_natio(FROM = "lgs_t2",
+               TO = "lgs_ant_t1")
 
 Reports %>%
   filter(scrutin_target %>%
            str_detect(pattern = "lgs_ant"),
          scrutin_source == "lgs_t1") %>%
-  split(f = str_c(.$code_du_departement, .$code_de_la_circonscription)) %>%
-  openxlsx::write.xlsx(asTable = TRUE,
-                       file = "Legislatives 2024/reports lgs par circo.xlsx")
+  split(f = str_c(.$code_du_departement,
+                  .$code_de_la_circonscription)) %>%
+  openxlsx::write.xlsx(
+    asTable = TRUE,
+    file = "Legislatives 2024/reports lgs par circo.xlsx")
 
 Reports %>%
   filter(scrutin_target %>%
            str_detect(pattern = "lgs_ant"),
          scrutin_source == "pdt_t1") %>%
-  split(f = str_c(.$code_du_departement, .$code_de_la_circonscription)) %>%
-  openxlsx::write.xlsx(asTable = TRUE,
-                       file = "Legislatives 2024/reports pdt par circo.xlsx")
+  split(f = str_c(.$code_du_departement,
+                  .$code_de_la_circonscription)) %>%
+  openxlsx::write.xlsx(
+    asTable = TRUE,
+    file = "Legislatives 2024/reports pdt par circo.xlsx")

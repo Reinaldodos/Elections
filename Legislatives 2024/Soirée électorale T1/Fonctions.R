@@ -6,8 +6,11 @@ get_tables <- function(url) {
     read_html() %>%
     html_table()
 
-  Tables[[1]] %>%
-    janitor::clean_names() %>%
+  list(
+    "Resultats" = Tables[[1]],
+    "Participation" = clean_votants(table = Tables[[2]])
+  ) %>%
+    map(.f = janitor::clean_names) %>%
     return()
 }
 

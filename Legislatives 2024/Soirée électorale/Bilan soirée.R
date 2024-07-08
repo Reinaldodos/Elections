@@ -1,80 +1,161 @@
 require(tidyverse)
 
+clean_BASE <- function(BASE) {
+  input =
+    BASE %>%
+    collect() %>%
+    mutate(across(
+      .cols = starts_with("percent"),
+      .fns = \(x)
+      str_replace_all(
+        string = x,
+        pattern = ",",
+        replacement = "\\."
+      ) %>%
+        as.numeric()
+    ))
+
+  input$voix =
+    input$voix %>%
+    str_remove_all(pattern = "[^[0-9]]") %>%
+    as.numeric()
+
+  return(input)
+}
+
 BASE =
   "Legislatives 2024/Soirée électorale/Stock/" %>%
   arrow::open_dataset(format = "arrow")
 
 input =
   BASE %>%
-  collect() %>%
-  mutate(across(
-    .cols = starts_with("percent"),
-    .fns = \(x)
-    str_replace_all(
-      string = x,
-      pattern = ",",
-      replacement = "\\."
-    ) %>%
-      as.numeric()
-  ))
+  clean_BASE()
 
-input$voix =
-  input$voix %>%
-  str_remove_all(pattern = "[^[0-9]]") %>%
-  as.numeric()
+output =
+  input %>%
+  drop_na(voix)
 
 input %>%
   group_nest(Departement, circo, url) %>%
   jsonlite::write_json(path = "Legislatives 2024/Soirée électorale/bilan.json")
 
-Circos =
-  BASE %>%
-  select(Departement, circo) %>%
-  distinct() %>%
-  collect()
-
 Elus =
   input %>%
   filter(elu_e == "OUI")
 
-Qualifs =
-  input %>%
-  filter(elu_e == "QUALIF T2")
-
 Elus_partiels =
-  bind_rows(Elus, Qualifs) %>%
-  anti_join(x = input, by = join_by(Departement, circo)) %>%
-  filter(percent_exprimes > 50, percent_inscrits > 25) %>%
-  mutate(elu_e = "NON")
-
-Ballotage_partiel =
-  bind_rows(Elus, Qualifs, Elus_partiels) %>%
+  Elus %>%
   anti_join(x = input,
             by = join_by(Departement, circo)) %>%
-  group_by(Departement, circo) %>%
-  mutate(Rank = dense_rank(-voix)) %>%
-  ungroup() %>%
-  filter(percent_inscrits >= 12.5 | Rank <= 2)
+  group_by(circo) %>%
+  top_n(n = 1, wt = voix)
+
+Etiquettes_NFP =
+  "Legislatives 2024/tableau-final-accord-frontpopulaire-leg2024-1.xlsx" %>%
+  readxl::read_excel() %>%
+  janitor::clean_names() %>%
+  select(circo, etiquette) %>%
+  drop_na() %>%
+  mutate(circo =
+           circo %>%
+           str_remove_all(pattern = "[^[Z 0-9]]"))
 
 Bilan =
-  list(Elus, Qualifs, Ballotage_partiel, Elus_partiels) %>%
+  list(Elus, Elus_partiels) %>%
   data.table::rbindlist(fill = TRUE) %>%
-  arrange(Departement, circo, nuance) %>%
-  summarise(
-    Situation = paste(nuance, collapse = " vs "),
-    .by = c(Departement, circo, elu_e)
-  ) %>%
-  mutate(Duels = case_when(
-    Situation %>%
-      str_count(pattern = " vs ") == 0 ~ "ELU",
-    Situation %>%
-      str_count(pattern = " vs ") == 1 ~ "Duel",
-    Situation %>%
-      str_count(pattern = " vs ") == 2 ~ "Triangulaires",
-    Situation %>%
-      str_count(pattern = " vs ") == 3 ~ "Quadrangulaires"
-  )) %>%
-  inner_join(x = Circos,
-             by = join_by(Departement, circo))
+  tidyr::separate(col = circo,
+                  into = c("code_circo",
+                           "libelle_circo"),
+                  sep = " - ") %>%
+  left_join(y = Etiquettes_NFP,
+            by = join_by(code_circo == circo)) %>%
+  mutate(
+    groupe_parlementaire = case_when(
+      nuance=="UG" ~ etiquette,
+      .default = nuance
+    )
+  )
+
+Circos =
+  Bilan %>%
+  distinct(Departement, code_circo)
+
+if(nrow(Circos) < 577) {
+  Bilan =
+    BASE %>%
+    distinct(Departement, circo) %>%
+    collect() %>%
+    tidyr::separate(col = circo,
+                    into = c("code_circo",
+                             "libelle_circo"),
+                    sep = " - ") %>%
+    left_join(y = Bilan,
+              by = join_by(Departement, code_circo, libelle_circo),
+              copy = TRUE)
+}
+
+Ordre =
+  tribble(
+    ~ groupe_parlementaire, ~ parti, ~ couleur, ~Bloc,
+  "FI", "France Insoumise", "#750707", "NFP",
+  "PCF", "Parti Communiste Français" ,"red","NFP",
+  "PE", "Europe Ecologie", "#23850b","NFP",
+  "PS", "Parti Socialiste", "pink","NFP",
+  "SOC", "Parti Socialiste", "pink","",
+  "DIV", "Parti Socialiste", "pink","",
+  "DVG", "Divers Gauche", "#f29999","",
+  "ECO", "Génération Ecologie", "#5fe63e","NFP",
+  "REG", "Régionaliste", "#4a5249","",
+  NA, "Résultat non parvenu", "#c7c1c1","",
+  "DVC", "Divers Centre", "#f7c040", "Macronie",
+  "ENS", "Ensemble !", "orange", "Macronie",
+  "HOR", "Horizons", "cyan", "Macronie",
+  "UDI", "UDI", "#44d4c5", "Droite",
+  "DVD", "Divers Droite", "#40c0f7", "Droite",
+  "LR", "Les Républicains", "blue", "Droite",
+  "UXD", "Les amis d'Eric Ciotti", "brown", "EXD",
+  "RN", "Rassemblement National", "#401515", "EXD",
+  "EXD", "Extrême Droite", "black", "EXD"
+)
+
+Ordre$parti =
+  factor(x = Ordre$parti,
+         levels = unique(Ordre$parti))
+
+Assemblee =
+  Bilan %>%
+  left_join(y = Ordre) %>%
+  count(parti, couleur) %>%
+  ggparliament::parliament_data(
+    election_data = .,
+    type = "semicircle",
+    party_seats = .$n,
+    # plot_order = .$parti,
+    parl_rows = 12
+  )
 
 
+Assemblee %>%
+  ggplot(mapping = aes(x = x, y = y,
+                       colour = parti)) +
+  ggparliament::geom_parliament_seats() +
+  ggparliament::draw_majoritythreshold(n = 289,
+                                       label = FALSE,
+                                       type = 'semicircle') +
+  ggparliament::draw_partylabels(type = "semicircle",
+                   party_names = parti,
+                   party_seats = n,
+                   party_colours = couleur) +
+  ggparliament::theme_ggparliament() +
+  labs(colour = "Groupe parlementaire",
+       title = "Assemblée Nationale") +
+  theme(legend.position = "bottom") +
+  scale_colour_manual(
+    values = Ordre$couleur,
+    limits = Ordre$parti
+    )
+
+Bilan %>%
+  left_join(y = Ordre) %>%
+  count(Bloc) %>%
+  arrange(-n)
