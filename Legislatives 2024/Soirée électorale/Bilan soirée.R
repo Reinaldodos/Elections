@@ -71,10 +71,11 @@ Bilan =
             by = join_by(code_circo == circo)) %>%
   mutate(
     groupe_parlementaire = case_when(
-      nuance=="UG" ~ etiquette,
+      nuance == "UG" ~ etiquette,
       .default = nuance
     )
-  )
+  ) %>%
+  replace_na(replace = list(groupe_parlementaire = "REG"))
 
 Circos =
   Bilan %>%
@@ -97,12 +98,12 @@ if(nrow(Circos) < 577) {
 Ordre =
   tribble(
     ~ groupe_parlementaire, ~ parti, ~ couleur, ~Bloc,
-  "FI", "France Insoumise", "#750707", "NFP",
+  "FI", "France Insoumise", "darkred", "NFP",
   "PCF", "Parti Communiste Français" ,"red","NFP",
   "PE", "Europe Ecologie", "#23850b","NFP",
-  "PS", "Parti Socialiste", "pink","NFP",
-  "SOC", "Parti Socialiste", "pink","",
-  "DIV", "Parti Socialiste", "pink","",
+  "PS", "Parti Socialiste", "#db4299","NFP",
+  "SOC", "Parti Socialiste", "#db4299","",
+  "DIV", "Parti Socialiste", "#db4299","",
   "DVG", "Divers Gauche", "#f29999","",
   "ECO", "Génération Ecologie", "#5fe63e","NFP",
   "REG", "Régionaliste", "#4a5249","",
@@ -110,8 +111,8 @@ Ordre =
   "DVC", "Divers Centre", "#f7c040", "Macronie",
   "ENS", "Ensemble !", "orange", "Macronie",
   "HOR", "Horizons", "cyan", "Macronie",
-  "UDI", "UDI", "#44d4c5", "Droite",
-  "DVD", "Divers Droite", "#40c0f7", "Droite",
+  "UDI", "UDI", "#177380", "Droite",
+  "DVD", "Divers Droite", "#0f4bf2", "Droite",
   "LR", "Les Républicains", "blue", "Droite",
   "UXD", "Les amis d'Eric Ciotti", "brown", "EXD",
   "RN", "Rassemblement National", "#401515", "EXD",
@@ -157,5 +158,5 @@ Assemblee %>%
 
 Bilan %>%
   left_join(y = Ordre) %>%
-  count(Bloc) %>%
+  count(parti) %>%
   arrange(-n)
