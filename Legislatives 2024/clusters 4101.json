@@ -1,0 +1,622 @@
+[
+  {
+    "Cluster": "1",
+    "commune": [
+      {
+        "code_de_la_commune": "002",
+        "libelle_de_la_commune": "Angé",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "018",
+        "libelle_de_la_commune": "Blois",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0304"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "029",
+        "libelle_de_la_commune": "Candé-sur-Beuvron",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "031",
+        "libelle_de_la_commune": "Cellettes",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          },
+          {
+            "code_du_b_vote": "0002"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "032",
+        "libelle_de_la_commune": "Chailles",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0002"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "045",
+        "libelle_de_la_commune": "Chaumont-sur-Loire",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "047",
+        "libelle_de_la_commune": "La Chaussée-Saint-Victor",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0002"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "050",
+        "libelle_de_la_commune": "Cheverny",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "051",
+        "libelle_de_la_commune": "Chissay-en-Touraine",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "052",
+        "libelle_de_la_commune": "Chitenay",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "059",
+        "libelle_de_la_commune": "Le Controis en Sologne",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          },
+          {
+            "code_du_b_vote": "0002"
+          },
+          {
+            "code_du_b_vote": "0003"
+          },
+          {
+            "code_du_b_vote": "0004"
+          },
+          {
+            "code_du_b_vote": "0005"
+          },
+          {
+            "code_du_b_vote": "0006"
+          },
+          {
+            "code_du_b_vote": "0007"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "059",
+        "libelle_de_la_commune": "Le Controis-en-Sologne",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          },
+          {
+            "code_du_b_vote": "0002"
+          },
+          {
+            "code_du_b_vote": "0003"
+          },
+          {
+            "code_du_b_vote": "0004"
+          },
+          {
+            "code_du_b_vote": "0005"
+          },
+          {
+            "code_du_b_vote": "0006"
+          },
+          {
+            "code_du_b_vote": "0007"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "061",
+        "libelle_de_la_commune": "Cormeray",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "067",
+        "libelle_de_la_commune": "Cour-Cheverny",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          },
+          {
+            "code_du_b_vote": "0002"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "080",
+        "libelle_de_la_commune": "Faverolles-sur-Cher",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "091",
+        "libelle_de_la_commune": "Fossé",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "094",
+        "libelle_de_la_commune": "Fresnes",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "128",
+        "libelle_de_la_commune": "Marolles",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "145",
+        "libelle_de_la_commune": "Monthou-sur-Bièvre",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "146",
+        "libelle_de_la_commune": "Monthou-sur-Cher",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "147",
+        "libelle_de_la_commune": "Les Montils",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          },
+          {
+            "code_du_b_vote": "0002"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "148",
+        "libelle_de_la_commune": "Montlivault",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "151",
+        "libelle_de_la_commune": "Montrichard Val de Cher",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          },
+          {
+            "code_du_b_vote": "0002"
+          },
+          {
+            "code_du_b_vote": "0003"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "180",
+        "libelle_de_la_commune": "Pontlevoy",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "189",
+        "libelle_de_la_commune": "Rilly-sur-Loire",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "203",
+        "libelle_de_la_commune": "Saint-Bohaire",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "204",
+        "libelle_de_la_commune": "Saint-Claude-de-Diray",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          },
+          {
+            "code_du_b_vote": "0002"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "211",
+        "libelle_de_la_commune": "Saint-Georges-sur-Cher",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          },
+          {
+            "code_du_b_vote": "0002"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "212",
+        "libelle_de_la_commune": "Saint-Gervais-la-Forêt",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          },
+          {
+            "code_du_b_vote": "0002"
+          },
+          {
+            "code_du_b_vote": "0003"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "217",
+        "libelle_de_la_commune": "Saint-Julien-de-Chédon",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "223",
+        "libelle_de_la_commune": "Saint-Lubin-en-Vergonnois",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "230",
+        "libelle_de_la_commune": "Saint-Sulpice de Pommeray",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          },
+          {
+            "code_du_b_vote": "0002"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "230",
+        "libelle_de_la_commune": "Saint-Sulpice-de-Pommeray",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          },
+          {
+            "code_du_b_vote": "0002"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "233",
+        "libelle_de_la_commune": "Sambin",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "237",
+        "libelle_de_la_commune": "Sassay",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "246",
+        "libelle_de_la_commune": "Seur",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "267",
+        "libelle_de_la_commune": "Vallières-les-Grandes",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "276",
+        "libelle_de_la_commune": "Villebarou",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          },
+          {
+            "code_du_b_vote": "0002"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "288",
+        "libelle_de_la_commune": "Villerbon",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "295",
+        "libelle_de_la_commune": "Vineuil",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          },
+          {
+            "code_du_b_vote": "0002"
+          },
+          {
+            "code_du_b_vote": "0003"
+          },
+          {
+            "code_du_b_vote": "0004"
+          },
+          {
+            "code_du_b_vote": "0005"
+          },
+          {
+            "code_du_b_vote": "0006"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Cluster": "2",
+    "commune": [
+      {
+        "code_de_la_commune": "018",
+        "libelle_de_la_commune": "Blois",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0201"
+          },
+          {
+            "code_du_b_vote": "0206"
+          },
+          {
+            "code_du_b_vote": "0207"
+          },
+          {
+            "code_du_b_vote": "0208"
+          },
+          {
+            "code_du_b_vote": "0209"
+          },
+          {
+            "code_du_b_vote": "0210"
+          },
+          {
+            "code_du_b_vote": "0211"
+          },
+          {
+            "code_du_b_vote": "0212"
+          },
+          {
+            "code_du_b_vote": "0213"
+          },
+          {
+            "code_du_b_vote": "0301"
+          },
+          {
+            "code_du_b_vote": "0302"
+          },
+          {
+            "code_du_b_vote": "0303"
+          },
+          {
+            "code_du_b_vote": "0305"
+          },
+          {
+            "code_du_b_vote": "0306"
+          },
+          {
+            "code_du_b_vote": "0307"
+          },
+          {
+            "code_du_b_vote": "0308"
+          },
+          {
+            "code_du_b_vote": "0402"
+          },
+          {
+            "code_du_b_vote": "0403"
+          },
+          {
+            "code_du_b_vote": "0404"
+          },
+          {
+            "code_du_b_vote": "0407"
+          },
+          {
+            "code_du_b_vote": "0415"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Cluster": "3",
+    "commune": [
+      {
+        "code_de_la_commune": "018",
+        "libelle_de_la_commune": "Blois",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0202"
+          },
+          {
+            "code_du_b_vote": "0203"
+          },
+          {
+            "code_du_b_vote": "0204"
+          },
+          {
+            "code_du_b_vote": "0205"
+          },
+          {
+            "code_du_b_vote": "0416"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Cluster": "4",
+    "commune": [
+      {
+        "code_de_la_commune": "018",
+        "libelle_de_la_commune": "Blois",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0405"
+          },
+          {
+            "code_du_b_vote": "0406"
+          },
+          {
+            "code_du_b_vote": "0408"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "032",
+        "libelle_de_la_commune": "Chailles",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "047",
+        "libelle_de_la_commune": "La Chaussée-Saint-Victor",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          },
+          {
+            "code_du_b_vote": "0003"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "166",
+        "libelle_de_la_commune": "Oisly",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "206",
+        "libelle_de_la_commune": "Saint-Denis-sur-Loire",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      },
+      {
+        "code_de_la_commune": "266",
+        "libelle_de_la_commune": "Valaire",
+        "bureaux": [
+          {
+            "code_du_b_vote": "0001"
+          }
+        ]
+      }
+    ]
+  }
+]
