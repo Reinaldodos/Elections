@@ -1,7 +1,9 @@
-require(tidyverse)
+library(tidyverse)
+
+data_url <- "https://www.data.gouv.fr/fr/datasets/r/6813fb28-7ec0-42ff-a528-2bc3d82d7dcd"
 
 input =
-  "https://www.data.gouv.fr/fr/datasets/r/6813fb28-7ec0-42ff-a528-2bc3d82d7dcd" %>%
+  data_url %>%
   rio::import(format = "csv", header = TRUE) %>%
   janitor::clean_names() %>%
   rowid_to_column(var = "rowid")
@@ -15,18 +17,15 @@ Bureaux =
            libelle_commune,
            code_bv)  %>%
   transmute(
-    rowid,
-    code_du_departement =
-      str_c("0", code_departement) %>%
+    code_du_departement = if_else(str_length(code_departement) == 1, str_c("0", code_departement), code_departement) %>%
       str_sub(start = -2),
     libelle_du_departement = libelle_departement,
-    code_de_la_commune =
-      code_commune %>%
+    code_de_la_commune = code_commune %>%
       str_sub(start = -3),
     libelle_de_la_commune = libelle_commune,
-    code_du_b_vote =
-      str_c("0000", code_bv) %>%
-      str_sub(start = -4),
+    code_du_b_vote = if_else(nchar(code_bv) < 4,
+                              str_c("0000", code_bv) %>% str_sub(start = -4),
+                              code_bv)
   )
 
 Non_exprimes =
@@ -42,7 +41,7 @@ Listes =
   pivot_longer(cols = -rowid,
                names_to = "TOTO",
                values_to = "candidat") %>%
-  filter(nchar(candidat) > 0) %>%
+  mutate(TOTO = TOTO %>% str_remove_all(pattern = "[\\D]"))
   mutate(TOTO = TOTO %>% str_remove_all(pattern = "[^[0-9]]"))
 
 Noms =
@@ -85,6 +84,12 @@ Resultats =
   inner_join(x = Bureaux,
              by= join_by(rowid))
 
+# Define the output file path as a variable
+output_file_path <- "Legislatives 2024/resultats bdv T1.rds"
+  # Save the results as an RDS file for efficient storage and retrieval.
+  # The RDS format is chosen because it preserves R objects, including data frames, 
+  # and allows for quick loading in future analyses or reporting.
+  saveRDS(file = "Legislatives 2024/resultats bdv T1.rds")
 Resultats %>%
   select(-rowid) %>%
-  saveRDS(file = "Legislatives 2024/resultats bdv T1.rds")
+  saveRDS(file = output_file_path)
