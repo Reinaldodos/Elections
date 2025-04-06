@@ -24,19 +24,31 @@ Communes_circo =
       str_sub(start = -4)
   )
 
-Donnees$EURO =
-  Communes_circo %>%
-  distinct() %>%
-  inner_join(
-    x = Donnees$EURO,
-    by = join_by(code_du_departement, code_de_la_commune, code_du_b_vote)
-  ) %>%
-  mutate(Tour = "T1")
+required_columns <- c("code_du_departement", "code_de_la_commune", "code_du_b_vote")
+
+if (all(required_columns %in% names(Communes_circo)) && all(required_columns %in% names(Donnees$EURO))) {
+  Donnees$EURO =
+    Communes_circo %>%
+    distinct() %>%
+    inner_join(
+      x = Donnees$EURO,
+      by = join_by(code_du_departement, code_de_la_commune, code_du_b_vote)
+    ) %>%
+    mutate(Tour = "T1")
+} else {
+  select(-any_of(c("score", "rowid")))
+}
 
 input =
   Donnees %>%
   bind_rows(.id = "scrutin") %>%
   select(-score, -rowid)
 
+# Ensure the directory exists
+output_dir <- "Legislatives 2024/data/"
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir, recursive = TRUE)
+}
+
 input %>%
-  arrow::write_parquet(sink = "Legislatives 2024/data/donnees.parquet")
+  arrow::write_parquet(sink = file.path(output_dir, "donnees.parquet"))

@@ -1,6 +1,14 @@
 
 
-require(tidyverse)
+if (!requireNamespace("pacman", quietly = TRUE)) {
+  install.packages("pacman")
+}
+
+pacman::p_load(tidyverse, pacman)
+
+# Install dependencies and their dependencies
+required_packages <- c("tidyverse", "dendextend", "data.table", "jsonlite", "scales", "viridis")
+pacman::p_load(char = required_packages)
 
 get_data_circo <- function(input, circo) {
   input_circo =
@@ -91,8 +99,8 @@ get_clusters_libelles <- function(Groupes, input_circo) {
 
 clusters_to_JSON <- function(data, path, ...) {
   data %>%
-    group_nest(Groupe, code_de_la_commune, libelle_de_la_commune, .key = "bureaux") %>%
-    group_nest(Groupe, .key = "commune") %>%
+    group_nest(Cluster, code_de_la_commune, libelle_de_la_commune, .key = "bureaux") %>%
+    group_nest(Cluster, .key = "commune") %>%
     jsonlite::write_json(path = path, ..., pretty = TRUE)
 }
 
@@ -111,7 +119,8 @@ get_data_score <- function(data, Groupes) {
     group_by(Groupe, scrutin, tour, candidat) %>%
     summarise(voix = sum(voix), .groups = "drop_last") %>%
     mutate(score = voix / sum(voix, na.rm = TRUE)) %>%
-    select(-voix)
+    select(-voix) %>%
+    ungroup() 
 
   return(data_score)
 }
